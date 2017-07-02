@@ -18,7 +18,8 @@ public class PlayState extends gamestates.GameState {
     private ArrayList<ArrayList<Bullet>> bullets;
     private ArrayList<Asteroid> asteroids;
 
-    private int numToSpawn = Settings.INITIAL_NUMBER_OF_ASTEROIDS;
+    private int numAsteroids = Settings.INITIAL_NUMBER_OF_ASTEROIDS;
+    private int numShips = Settings.NUMBER_OF_SHIPS;
 
     public PlayState(GameStateManager gsm) {
         super(gsm);
@@ -31,7 +32,7 @@ public class PlayState extends gamestates.GameState {
         bullets = new ArrayList<>();
         asteroids = new ArrayList<>();
 
-        for (int i = 0; i < Settings.NUMBER_OF_SHIPS; i++) {
+        for (int i = 0; i < numShips; i++) {
             bullets.add(new ArrayList<>());
             ships.add(new Ship(bullets.get(i)));
         }
@@ -43,6 +44,15 @@ public class PlayState extends gamestates.GameState {
         spawnAsteroids();
     }
 
+    private void spawnShip() {
+        bullets.add(new ArrayList<>());
+        ships.add(new Ship(bullets.get(bullets.size()-1)));
+    }
+
+    /**
+     * Creates a new Asteroid.
+     * TODO: decidir se mantenho a verificação de proximidade da posição inicial do asteroide à nave.
+     */
     private void spawnSingleAsteroid() {
         float x = MathUtils.random(Game.WIDTH);
         float y = MathUtils.random(Game.HEIGHT);
@@ -65,7 +75,7 @@ public class PlayState extends gamestates.GameState {
     private void spawnAsteroids() {
         asteroids.clear();
 
-        for (int i = 0; i < numToSpawn; i++)
+        for (int i = 0; i < numAsteroids; i++)
             spawnSingleAsteroid();
     }
 
@@ -108,12 +118,14 @@ public class PlayState extends gamestates.GameState {
 
         checkCollisions();
 
-        while (asteroids.size() < numToSpawn)
+        while (ships.size() < numShips)
+            spawnShip();
+        while (asteroids.size() < numAsteroids)
             spawnSingleAsteroid();
     }
 
     /**
-     * Checks if any ship colided with a bullet or asteroid.
+     * Checks if any Ship colided with a Asteroid.
      */
     private void checkShipsAsteroidsCollisions() {
         for (int i = 0; i < ships.size(); i++) {
@@ -132,6 +144,9 @@ public class PlayState extends gamestates.GameState {
         }
     }
 
+    /**
+     * Check if any Ship colided with a Bullet.
+     */
     private void checkShipsBulletsCollisions() {
         for (int i = 0; i < ships.size(); i++) {
             Ship s = ships.get(i);
@@ -153,6 +168,9 @@ public class PlayState extends gamestates.GameState {
         }
     }
 
+    /**
+     * Check if any Bullet colided with an Asteroid.
+     */
     private void checkBulletsAsteroidsCollisions() {
         for (ArrayList<Bullet> bullets_flying : bullets)
             for (int i = 0; i < bullets_flying.size(); i++) {

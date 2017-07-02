@@ -99,6 +99,13 @@ public class Ship extends SpaceObject {
             n += 2 * Math.PI;
     }
 
+    /**
+     * Searches the closest asteroid and flies in its direction.
+     * TODO: a nave ainda não vira diretamente para o asteroide.
+     * TODO: converter de array de Asteroids para array de SpaceObjects
+     *
+     * @param asteroids Asteroids to search
+     */
     public void nearestFood(ArrayList<Asteroid> asteroids) {
         double min_distance = 9999;
         Asteroid closestAsteroid = null;
@@ -115,7 +122,7 @@ public class Ship extends SpaceObject {
             double desired_angle_radians = Math.atan2(closestAsteroid.gety() - y, closestAsteroid.getx() - x);
             if (desired_angle_radians < 0)
                 desired_angle_radians += 2 * Math.PI;
-            desired = (float) desired_angle_radians;// TODO perceber porque é preciso ter aqui o *100
+            desired = (float) desired_angle_radians;
         }
 
         float max_angle = (float) (desired + Settings.SHIP_SATISFIABLE_ANGLE);
