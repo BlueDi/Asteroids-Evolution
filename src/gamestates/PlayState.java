@@ -6,7 +6,6 @@ import entities.Asteroid;
 import entities.Bullet;
 import entities.Ship;
 import managers.Game;
-import managers.GameKeys;
 import managers.GameStateManager;
 import managers.Settings;
 
@@ -83,8 +82,10 @@ public class PlayState extends gamestates.GameState {
         handleInput();
 
         // update ship
-        for (Ship ship : ships)
+        for (Ship ship : ships) {
+            ship.nearestFood(asteroids);
             ship.update(dt);
+        }
 
         // update ship bullets
         for (ArrayList<Bullet> bullets_of_ship : bullets)
@@ -105,40 +106,54 @@ public class PlayState extends gamestates.GameState {
             }
         }
 
-        checkColisions();
+        checkCollisions();
 
         while (asteroids.size() < numToSpawn)
             spawnSingleAsteroid();
     }
 
-    private void checkColisions() {
+    /**
+     * Checks if any ship colided with a bullet or asteroid.
+     */
+    private void checkShipsAsteroidsCollisions() {
         for (int i = 0; i < ships.size(); i++) {
             Ship s = ships.get(i);
             for (int j = 0; j < asteroids.size(); j++) {
                 Asteroid a = asteroids.get(j);
                 if (a.intersects(s)) {
-                    //ships.get(0).hit();
+                    ships.remove(i);
+                    bullets.remove(i);
+                    i--;
                     asteroids.remove(j);
                     splitAsteroid(a);
                     break;
                 }
             }
-            for (int j = 0; j < bullets.size(); j++) {
-                if (i == j)
-                    continue;
-                ArrayList<Bullet> enemy_bullets = bullets.get(j);
-                for (int k = 0; k < enemy_bullets.size(); k++) {
-                    Bullet b = enemy_bullets.get(k);
-                    if (s.contains(b.getx(), b.gety())) {
-                        enemy_bullets.remove(b);
-                        i--;
-                        ships.remove(s);
-                        break;
+        }
+    }
+
+    private void checkShipsBulletsCollisions() {
+        for (int i = 0; i < ships.size(); i++) {
+            Ship s = ships.get(i);
+            for (int j = 0; j < bullets.size(); j++)
+                if (i != j) {
+                    ArrayList<Bullet> enemy_bullets = bullets.get(j);
+                    for (int k = 0; k < enemy_bullets.size(); k++) {
+                        Bullet b = enemy_bullets.get(k);
+                        if (s.contains(b.getx(), b.gety())) {
+                            enemy_bullets.remove(b);
+                            ships.remove(i);
+                            bullets.remove(i);
+                            i--;
+                            j--;
+                            break;
+                        }
                     }
                 }
-            }
         }
+    }
 
+    private void checkBulletsAsteroidsCollisions() {
         for (ArrayList<Bullet> bullets_flying : bullets)
             for (int i = 0; i < bullets_flying.size(); i++) {
                 Bullet b = bullets_flying.get(i);
@@ -155,29 +170,45 @@ public class PlayState extends gamestates.GameState {
             }
     }
 
-    public void draw() {
-        // draw ship
+    private void checkCollisions() {
+        checkShipsBulletsCollisions();
+        checkShipsAsteroidsCollisions();
+        checkBulletsAsteroidsCollisions();
+    }
+
+    private void drawShips() {
         for (Ship ship : ships)
             ship.draw(sr);
+    }
 
-        // draw bullets
+    private void drawBullets() {
         for (ArrayList<Bullet> bullets_flying : bullets)
             for (Bullet bullet : bullets_flying)
                 bullet.draw(sr);
+    }
 
-        // draw asteroids
+    private void drawAsteroids() {
         for (Asteroid asteroid : asteroids)
             asteroid.draw(sr);
     }
 
+    public void draw() {
+        drawShips();
+        drawBullets();
+        drawAsteroids();
+    }
+
     public void handleInput() {
+        /*
         ships.get(0).setLeft(GameKeys.isDown(GameKeys.LEFT));
         ships.get(0).setRight(GameKeys.isDown(GameKeys.RIGHT));
         ships.get(0).setUp(GameKeys.isDown(GameKeys.UP));
         if (GameKeys.isPressed(GameKeys.SPACE)) {
             ships.get(0).shoot();
         }
+        */
     }
+
 
     public void dispose() {
     }

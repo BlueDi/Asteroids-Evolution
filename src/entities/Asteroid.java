@@ -39,9 +39,9 @@ public class Asteroid extends SpaceObject {
 
         rotationSpeed = MathUtils.random(-1, 1);
 
-        radians = MathUtils.random(2 * 3.1415f);
-        dx = MathUtils.cos(radians) * speed;
-        dy = MathUtils.sin(radians) * speed;
+        orientation = MathUtils.random(2 * (float) Math.PI);
+        dx = MathUtils.cos(orientation) * speed;
+        dy = MathUtils.sin(orientation) * speed;
 
         shapex = new float[numPoints];
         shapey = new float[numPoints];
@@ -58,8 +58,8 @@ public class Asteroid extends SpaceObject {
     private void setShape() {
         float angle = 0;
         for (int i = 0; i < numPoints; i++) {
-            shapex[i] = x + MathUtils.cos(angle + radians) * dists[i];
-            shapey[i] = y + MathUtils.sin(angle + radians) * dists[i];
+            shapex[i] = x + MathUtils.cos(angle + orientation) * dists[i];
+            shapey[i] = y + MathUtils.sin(angle + orientation) * dists[i];
             angle += 2 * 3.1415f / numPoints;
         }
     }
@@ -80,7 +80,7 @@ public class Asteroid extends SpaceObject {
         x += dx * dt;
         y += dy * dt;
 
-        radians += rotationSpeed * dt;
+        orientation += rotationSpeed * dt;
         setShape();
 
         wrap();

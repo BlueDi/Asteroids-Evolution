@@ -37,41 +37,48 @@ public class Ship extends SpaceObject {
         flamex = new float[3];
         flamey = new float[3];
 
-        radians = PI / 2;
+        orientation = Settings.SHIP_STARTING_ORIENTATION;
         rotationSpeed = Settings.SHIP_ROTATION;
     }
 
     private void setShape() {
-        shapex[0] = x + MathUtils.cos(radians) * 8;
-        shapey[0] = y + MathUtils.sin(radians) * 8;
+        shapex[0] = x + MathUtils.cos(orientation) * 8;
+        shapey[0] = y + MathUtils.sin(orientation) * 8;
 
-        shapex[1] = x + MathUtils.cos(radians - 4 * PI / 5) * 8;
-        shapey[1] = y + MathUtils.sin(radians - 4 * PI / 5) * 8;
+        shapex[1] = x + MathUtils.cos(orientation - 4 * PI / 5) * 8;
+        shapey[1] = y + MathUtils.sin(orientation - 4 * PI / 5) * 8;
 
-        shapex[2] = x + MathUtils.cos(radians + PI) * 5;
-        shapey[2] = y + MathUtils.sin(radians + PI) * 5;
+        shapex[2] = x + MathUtils.cos(orientation + PI) * 5;
+        shapey[2] = y + MathUtils.sin(orientation + PI) * 5;
 
-        shapex[3] = x + MathUtils.cos(radians + 4 * PI / 5) * 8;
-        shapey[3] = y + MathUtils.sin(radians + 4 * PI / 5) * 8;
+        shapex[3] = x + MathUtils.cos(orientation + 4 * PI / 5) * 8;
+        shapey[3] = y + MathUtils.sin(orientation + 4 * PI / 5) * 8;
     }
 
     private void setFlame() {
-        flamex[0] = x + MathUtils.cos(radians - 5 * PI / 6) * 5;
-        flamey[0] = y + MathUtils.sin(radians - 5 * PI / 6) * 5;
+        flamex[0] = x + MathUtils.cos(orientation - 5 * PI / 6) * 5;
+        flamey[0] = y + MathUtils.sin(orientation - 5 * PI / 6) * 5;
 
-        flamex[1] = x + MathUtils.cos(radians - PI) * (6 + acceleratingTimer * 50);
-        flamey[1] = y + MathUtils.sin(radians - PI) * (6 + acceleratingTimer * 50);
+        flamex[1] = x + MathUtils.cos(orientation - PI) * (6 + acceleratingTimer * 50);
+        flamey[1] = y + MathUtils.sin(orientation - PI) * (6 + acceleratingTimer * 50);
 
-        flamex[2] = x + MathUtils.cos(radians + 5 * PI / 6) * 5;
-        flamey[2] = y + MathUtils.sin(radians + 5 * PI / 6) * 5;
+        flamex[2] = x + MathUtils.cos(orientation + 5 * PI / 6) * 5;
+        flamey[2] = y + MathUtils.sin(orientation + 5 * PI / 6) * 5;
     }
 
-    public void setLeft(boolean b) {
-        left = b;
+    private void setLeft() {
+        left = true;
+        right = false;
     }
 
-    public void setRight(boolean b) {
-        right = b;
+    private void setRight() {
+        right = true;
+        left = false;
+    }
+
+    private void setStraight() {
+        left = false;
+        right = false;
     }
 
     public void setUp(boolean b) {
@@ -81,21 +88,66 @@ public class Ship extends SpaceObject {
     public void shoot() {
         if (bullets.size() == MAX_BULLETS)
             return;
-        bullets.add(new Bullet(x, y, radians));
+        bullets.add(new Bullet(x, y, orientation));
+    }
+
+    private void transform2pi(float n) {
+        while (n > 2 * Math.PI)
+            n -= 2 * Math.PI;
+
+        while (n < 2 * Math.PI)
+            n += 2 * Math.PI;
+    }
+
+    public void nearestFood(ArrayList<Asteroid> asteroids) {
+        double min_distance = 9999;
+        Asteroid closestAsteroid = null;
+        for (Asteroid a : asteroids) {
+            double distance = Math.abs(a.getx() - x + a.gety() - y);
+            if (distance < min_distance) {
+                min_distance = distance;
+                closestAsteroid = a;
+            }
+        }
+
+        float desired = 0;
+        if (closestAsteroid != null) {
+            double desired_angle_radians = Math.atan2(closestAsteroid.gety() - y, closestAsteroid.getx() - x);
+            if (desired_angle_radians < 0)
+                desired_angle_radians += 2 * Math.PI;
+            desired = (float) desired_angle_radians;// TODO perceber porque é preciso ter aqui o *100
+        }
+
+        float max_angle = (float) (desired + Settings.SHIP_SATISFIABLE_ANGLE);
+        float min_angle = (float) (desired - Settings.SHIP_SATISFIABLE_ANGLE);
+        transform2pi(max_angle);
+        transform2pi(min_angle);
+        transform2pi(orientation);
+
+        if (orientation < min_angle) {
+            setLeft();
+            setUp(false);
+        } else if (orientation > max_angle) {
+            setRight();
+            setUp(false);
+        } else {
+            setStraight();
+            setUp(true);
+        }
     }
 
     public void update(float dt) {
         // turning
         if (left) {
-            radians += rotationSpeed * dt;
+            orientation += rotationSpeed * dt;
         } else if (right) {
-            radians -= rotationSpeed * dt;
+            orientation -= rotationSpeed * dt;
         }
 
         // accelerating
         if (up) {
-            dx += MathUtils.cos(radians) * acceleration * dt;
-            dy += MathUtils.sin(radians) * acceleration * dt;
+            dx += MathUtils.cos(orientation) * acceleration * dt;
+            dy += MathUtils.sin(orientation) * acceleration * dt;
             acceleratingTimer += dt;
             if (acceleratingTimer > 0.1f) {
                 acceleratingTimer = 0;

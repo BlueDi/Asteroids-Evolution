@@ -13,7 +13,7 @@ public class Bullet extends SpaceObject {
     Bullet(float x, float y, float radians) {
         this.x = x;
         this.y = y;
-        this.radians = radians;
+        this.orientation = radians;
 
         float speed = Settings.BULLET_SPEED;
         dx = MathUtils.cos(radians) * speed;
