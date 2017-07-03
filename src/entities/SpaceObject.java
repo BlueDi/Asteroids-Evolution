@@ -73,21 +73,3 @@ public class SpaceObject {
         return contain;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
