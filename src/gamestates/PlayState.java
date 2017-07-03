@@ -113,7 +113,8 @@ public class PlayState extends gamestates.GameState {
         // update ship
         for (int i = 0; i < ships.size(); i++) {
             Ship s = ships.get(i);
-            s.nearestFood(asteroids);
+            s.nearestFood(food);
+            s.nearestAsteroid(asteroids);
             s.update(dt);
             if (s.shouldRemove()) {
                 ships.remove(i);
@@ -137,6 +138,16 @@ public class PlayState extends gamestates.GameState {
             a.update(dt);
             if (a.shouldRemove()) {
                 asteroids.remove(i);
+                i--;
+            }
+        }
+
+        // update asteroids
+        for (int i = 0; i < food.size(); i++) {
+            Food f = food.get(i);
+            f.update(dt);
+            if (f.shouldRemove()) {
+                food.remove(i);
                 i--;
             }
         }
