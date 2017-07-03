@@ -9,6 +9,10 @@ import managers.Settings;
 import java.util.ArrayList;
 
 public class Ship extends SpaceObject {
+    private float lifeTime = Settings.SHIP_LIFETIME;
+    private float lifeTimer = 0;
+    private boolean remove = false;
+
     private final int MAX_BULLETS = Settings.SHIP_MAX_BULLETS;
     private ArrayList<Bullet> bullets;
 
@@ -83,6 +87,14 @@ public class Ship extends SpaceObject {
 
     public void setUp(boolean b) {
         up = b;
+    }
+
+    public void setTimer(int t) {
+        lifeTimer = t;
+    }
+
+    public boolean shouldRemove() {
+        return remove;
     }
 
     public void shoot() {
@@ -187,6 +199,11 @@ public class Ship extends SpaceObject {
 
         // screen wrap
         wrap();
+
+        lifeTimer += dt;
+        if (lifeTimer > lifeTime) {
+            remove = true;
+        }
     }
 
     public void draw(ShapeRenderer sr) {

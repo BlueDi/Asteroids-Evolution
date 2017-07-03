@@ -4,12 +4,14 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import entities.Asteroid;
 import entities.Bullet;
+import entities.Food;
 import entities.Ship;
 import managers.Game;
 import managers.GameStateManager;
 import managers.Settings;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class PlayState extends gamestates.GameState {
     private ShapeRenderer sr;
@@ -17,9 +19,11 @@ public class PlayState extends gamestates.GameState {
     private ArrayList<Ship> ships;
     private ArrayList<ArrayList<Bullet>> bullets;
     private ArrayList<Asteroid> asteroids;
+    private List<Food> food;
 
-    private int numAsteroids = Settings.INITIAL_NUMBER_OF_ASTEROIDS;
     private int numShips = Settings.NUMBER_OF_SHIPS;
+    private int numAsteroids = Settings.INITIAL_NUMBER_OF_ASTEROIDS;
+    private int numFood = Settings.NUMBER_OF_FOOD;
 
     public PlayState(GameStateManager gsm) {
         super(gsm);
@@ -31,6 +35,7 @@ public class PlayState extends gamestates.GameState {
         ships = new ArrayList<>();
         bullets = new ArrayList<>();
         asteroids = new ArrayList<>();
+        food = new ArrayList<>();
 
         for (int i = 0; i < numShips; i++) {
             bullets.add(new ArrayList<>());
@@ -42,11 +47,27 @@ public class PlayState extends gamestates.GameState {
         asteroids.add(new Asteroid(300, 100, Asteroid.SMALL));
 
         spawnAsteroids();
+        spawnFood();
+    }
+
+    private float[] generatePositionFarFromShip(int min_distance) {
+        double dist;
+        float[] position = new float[2];
+
+        do {
+            position[0] = MathUtils.random(Game.WIDTH);
+            position[1] = MathUtils.random(Game.HEIGHT);
+            float dx = position[0] - ships.get(0).getx();
+            float dy = position[1] - ships.get(0).gety();
+            dist = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+        } while (dist < min_distance);
+
+        return position;
     }
 
     private void spawnShip() {
         bullets.add(new ArrayList<>());
-        ships.add(new Ship(bullets.get(bullets.size()-1)));
+        ships.add(new Ship(bullets.get(bullets.size() - 1)));
     }
 
     /**
@@ -54,22 +75,8 @@ public class PlayState extends gamestates.GameState {
      * TODO: decidir se mantenho a verificação de proximidade da posição inicial do asteroide à nave.
      */
     private void spawnSingleAsteroid() {
-        float x = MathUtils.random(Game.WIDTH);
-        float y = MathUtils.random(Game.HEIGHT);
-
-        float dx = x - ships.get(0).getx();
-        float dy = y - ships.get(0).gety();
-        float dist = (float) Math.sqrt(dx * dx + dy * dy);
-
-        while (dist < Settings.DISTANCE_SHIP_FOOD) {
-            x = MathUtils.random(Game.WIDTH);
-            y = MathUtils.random(Game.HEIGHT);
-            dx = x - ships.get(0).getx();
-            dy = y - ships.get(0).gety();
-            dist = (float) Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
-        }
-
-        asteroids.add(new Asteroid(x, y, Asteroid.LARGE));
+        float[] position = generatePositionFarFromShip(Settings.DISTANCE_SHIP_ASTEROID);
+        asteroids.add(new Asteroid(position[0], position[1], Asteroid.LARGE));
     }
 
     private void spawnAsteroids() {
@@ -87,14 +94,31 @@ public class PlayState extends gamestates.GameState {
             asteroids.add(new Asteroid(a.getx(), a.gety(), Asteroid.SMALL));
     }
 
+    private void spawnSingleFood() {
+        float[] position = generatePositionFarFromShip(Settings.DISTANCE_SHIP_FOOD);
+        food.add(new Food(position[0], position[1]));
+    }
+
+    private void spawnFood() {
+        food.clear();
+
+        for (int i = 0; i < numFood; i++)
+            spawnSingleFood();
+    }
+
     public void update(float dt) {
         // get user input
         handleInput();
 
         // update ship
-        for (Ship ship : ships) {
-            ship.nearestFood(asteroids);
-            ship.update(dt);
+        for (int i = 0; i < ships.size(); i++) {
+            Ship s = ships.get(i);
+            s.nearestFood(asteroids);
+            s.update(dt);
+            if (s.shouldRemove()) {
+                ships.remove(i);
+                i--;
+            }
         }
 
         // update ship bullets
@@ -109,8 +133,9 @@ public class PlayState extends gamestates.GameState {
 
         // update asteroids
         for (int i = 0; i < asteroids.size(); i++) {
-            asteroids.get(i).update(dt);
-            if (asteroids.get(i).shouldRemove()) {
+            Asteroid a = asteroids.get(i);
+            a.update(dt);
+            if (a.shouldRemove()) {
                 asteroids.remove(i);
                 i--;
             }
@@ -122,10 +147,12 @@ public class PlayState extends gamestates.GameState {
             spawnShip();
         while (asteroids.size() < numAsteroids)
             spawnSingleAsteroid();
+        while (food.size() < numFood)
+            spawnSingleFood();
     }
 
     /**
-     * Checks if any Ship colided with a Asteroid.
+     * Checks if any Ship collided with a Asteroid.
      */
     private void checkShipsAsteroidsCollisions() {
         for (int i = 0; i < ships.size(); i++) {
@@ -145,7 +172,23 @@ public class PlayState extends gamestates.GameState {
     }
 
     /**
-     * Check if any Ship colided with a Bullet.
+     * Check if any Ship collided with a Food.
+     */
+    private void checkShipsFoodCollisions() {
+        for (Ship s : ships) {
+            for (int j = 0; j < food.size(); j++) {
+                Food f = food.get(j);
+                if (s.contains(f.getx(), f.gety())) {
+                    s.setTimer(0);
+                    food.remove(j);
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
+     * Check if any Ship collided with a Bullet.
      */
     private void checkShipsBulletsCollisions() {
         for (int i = 0; i < ships.size(); i++) {
@@ -169,7 +212,7 @@ public class PlayState extends gamestates.GameState {
     }
 
     /**
-     * Check if any Bullet colided with an Asteroid.
+     * Check if any Bullet collided with an Asteroid.
      */
     private void checkBulletsAsteroidsCollisions() {
         for (ArrayList<Bullet> bullets_flying : bullets)
@@ -190,6 +233,7 @@ public class PlayState extends gamestates.GameState {
 
     private void checkCollisions() {
         checkShipsBulletsCollisions();
+        checkShipsFoodCollisions();
         checkShipsAsteroidsCollisions();
         checkBulletsAsteroidsCollisions();
     }
@@ -210,10 +254,16 @@ public class PlayState extends gamestates.GameState {
             asteroid.draw(sr);
     }
 
+    private void drawFood() {
+        for (Food f : food)
+            f.draw(sr);
+    }
+
     public void draw() {
         drawShips();
         drawBullets();
         drawAsteroids();
+        drawFood();
     }
 
     public void handleInput() {
