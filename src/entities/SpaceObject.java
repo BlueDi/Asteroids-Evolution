@@ -1,17 +1,21 @@
 package entities;
 
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import managers.Game;
 
-public class SpaceObject {
+abstract class SpaceObject {
     float x;
     float y;
-
     float dx;
     float dy;
 
     float orientation;
     float speed;
     float rotationSpeed;
+
+    float lifeTime;
+    float lifeTimer = 0;
+    boolean remove = false;
 
     int width;
     int height;
@@ -22,18 +26,21 @@ public class SpaceObject {
     public float getx() {
         return x;
     }
-
     public float gety() {
         return y;
     }
-
     private float[] getShapex() {
         return shapex;
     }
-
     private float[] getShapey() {
         return shapey;
     }
+    public boolean shouldRemove() {
+        return remove;
+    }
+
+    public abstract void update(float dt);
+    public abstract void draw(ShapeRenderer sr);
 
     /**
      * Se bater na borda passa para o outro lado.
@@ -58,8 +65,8 @@ public class SpaceObject {
     public boolean intersects(SpaceObject other) {
         float[] sx = other.getShapex();
         float[] sy = other.getShapey();
-        for(int i = 0; i <sx.length; i++) {
-            if(contains(sx[i], sy[i]))
+        for (int i = 0; i < sx.length; i++) {
+            if (contains(sx[i], sy[i]))
                 return true;
         }
         return false;

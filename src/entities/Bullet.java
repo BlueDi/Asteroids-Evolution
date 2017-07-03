@@ -5,25 +5,17 @@ import com.badlogic.gdx.math.MathUtils;
 import managers.Settings;
 
 public class Bullet extends SpaceObject {
-    private float lifeTime = Settings.BULLET_LIFETIME;
-    private float lifeTimer = 0;
-
-    private boolean remove = false;
-
     Bullet(float x, float y, float radians) {
         this.x = x;
         this.y = y;
         this.orientation = radians;
+        this.lifeTime = Settings.BULLET_LIFETIME;
 
         float speed = Settings.BULLET_SPEED;
         dx = MathUtils.cos(radians) * speed;
         dy = MathUtils.sin(radians) * speed;
 
         width = height = 2;
-    }
-
-    public boolean shouldRemove() {
-        return remove;
     }
 
     public void update(float dt) {

@@ -14,28 +14,13 @@ public class Asteroid extends SpaceObject {
     private int numPoints;
     private float[] dists;
 
-    private float lifeTime = Settings.ASTEROID_LIFETIME;
-    private float lifeTimer = 0;
-    private boolean remove = false;
-
     public Asteroid(float x, float y, int type) {
         this.x = x;
         this.y = y;
         this.type = type;
+        this.lifeTime = Settings.ASTEROID_LIFETIME;
 
-        if (type == SMALL) {
-            numPoints = 8;
-            width = height = 12;
-            speed = MathUtils.random(70, 100);
-        } else if (type == MEDIUM) {
-            numPoints = 10;
-            width = height = 20;
-            speed = MathUtils.random(50, 60);
-        } else if (type == LARGE) {
-            numPoints = 12;
-            width = height = 40;
-            speed = MathUtils.random(20, 30);
-        }
+        defineType();
 
         rotationSpeed = MathUtils.random(-1, 1);
 
@@ -55,6 +40,22 @@ public class Asteroid extends SpaceObject {
         setShape();
     }
 
+    private void defineType() {
+        if (type == SMALL) {
+            numPoints = 8;
+            width = height = 12;
+            speed = MathUtils.random(70, 100);
+        } else if (type == MEDIUM) {
+            numPoints = 10;
+            width = height = 20;
+            speed = MathUtils.random(50, 60);
+        } else if (type == LARGE) {
+            numPoints = 12;
+            width = height = 40;
+            speed = MathUtils.random(20, 30);
+        }
+    }
+
     private void setShape() {
         float angle = 0;
         for (int i = 0; i < numPoints; i++) {
@@ -66,10 +67,6 @@ public class Asteroid extends SpaceObject {
 
     public int getType() {
         return type;
-    }
-
-    public boolean shouldRemove() {
-        return remove;
     }
 
     public void update(float dt) {
@@ -87,7 +84,7 @@ public class Asteroid extends SpaceObject {
     }
 
     public void draw(ShapeRenderer sr) {
-        sr.setColor(1, 1, 1, 1);
+        sr.setColor(1, 0, 0, 1);
         sr.begin(ShapeType.Line);
         for (int i = 0, j = shapex.length - 1; i < shapex.length; j = i++)
             sr.line(shapex[i], shapey[i], shapex[j], shapey[j]);

@@ -9,10 +9,6 @@ import managers.Settings;
 import java.util.List;
 
 public class Ship extends SpaceObject {
-    private float lifeTime = Settings.SHIP_LIFETIME;
-    private float lifeTimer = 0;
-    private boolean remove = false;
-
     private final int MAX_BULLETS = Settings.SHIP_MAX_BULLETS;
     private List<Bullet> bullets;
 
@@ -35,6 +31,7 @@ public class Ship extends SpaceObject {
 
     public Ship(List<Bullet> bullets) {
         this.bullets = bullets;
+        this.lifeTime = Settings.SHIP_LIFETIME;
 
         x = (float) Math.random() * Game.WIDTH / 2 + Game.WIDTH / 4;
         y = (float) Math.random() * Game.HEIGHT / 2 + Game.HEIGHT / 4;
@@ -95,10 +92,6 @@ public class Ship extends SpaceObject {
     public void setTimer(int t) {
         lifeTimer = t;
         lifeTime += t;
-    }
-
-    public boolean shouldRemove() {
-        return remove;
     }
 
     public void shoot() {
