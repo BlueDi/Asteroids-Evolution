@@ -14,10 +14,7 @@ public class Food extends SpaceObject {
     }
 
     public void update(float dt) {
-        lifeTimer += dt;
-        if (lifeTimer > lifeTime) {
-            remove = true;
-        }
+        isAlive(dt);
     }
 
     public void draw(ShapeRenderer sr) {

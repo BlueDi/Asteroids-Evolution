@@ -56,6 +56,17 @@ abstract class SpaceObject {
             y = 0;
     }
 
+    void updatePosition(float dt) {
+        x += dx * dt;
+        y += dy * dt;
+    }
+
+    void isAlive(float dt) {
+        lifeTimer += dt;
+        if (lifeTimer >= lifeTime)
+            remove = true;
+    }
+
     /**
      * Verifica se dois SpaceObject colidem.
      *

@@ -19,15 +19,11 @@ public class Bullet extends SpaceObject {
     }
 
     public void update(float dt) {
-        x += dx * dt;
-        y += dy * dt;
+        updatePosition(dt);
 
         wrap();
 
-        lifeTimer += dt;
-        if (lifeTimer > lifeTime) {
-            remove = true;
-        }
+        isAlive(dt);
     }
 
     public void draw(ShapeRenderer sr) {

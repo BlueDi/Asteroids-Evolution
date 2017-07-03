@@ -40,6 +40,10 @@ public class Asteroid extends SpaceObject {
         setShape();
     }
 
+    public int getType() {
+        return type;
+    }
+
     private void defineType() {
         if (type == SMALL) {
             numPoints = 8;
@@ -65,17 +69,10 @@ public class Asteroid extends SpaceObject {
         }
     }
 
-    public int getType() {
-        return type;
-    }
-
     public void update(float dt) {
-        lifeTimer += dt;
-        if (lifeTimer >= lifeTime)
-            remove = true;
+        isAlive(dt);
 
-        x += dx * dt;
-        y += dy * dt;
+        updatePosition(dt);
 
         orientation += rotationSpeed * dt;
         setShape();

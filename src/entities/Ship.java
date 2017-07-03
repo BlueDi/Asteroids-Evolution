@@ -178,15 +178,15 @@ public class Ship extends SpaceObject {
         }
     }
 
-    public void update(float dt) {
-        // turning
+    private void rotate(float dt) {
         if (left) {
             orientation += rotationSpeed * dt;
         } else if (right) {
             orientation -= rotationSpeed * dt;
         }
+    }
 
-        // accelerating
+    private void accelerate(float dt) {
         if (up) {
             dx += MathUtils.cos(orientation) * acceleration * dt;
             dy += MathUtils.sin(orientation) * acceleration * dt;
@@ -197,8 +197,9 @@ public class Ship extends SpaceObject {
         } else {
             acceleratingTimer = 0;
         }
+    }
 
-        // deceleration
+    private void decelerate(float dt) {
         float vec = (float) Math.sqrt(dx * dx + dy * dy);
         if (vec > 0) {
             dx -= (dx / vec) * deceleration * dt;
@@ -208,25 +209,24 @@ public class Ship extends SpaceObject {
             dx = (dx / vec) * maxSpeed;
             dy = (dy / vec) * maxSpeed;
         }
+    }
 
-        // set position
-        x += dx * dt;
-        y += dy * dt;
+    public void update(float dt) {
+        rotate(dt);
 
-        // set shape
+        accelerate(dt);
+        decelerate(dt);
+        updatePosition(dt);
+
         setShape();
 
-        // set flame
         if (up)
             setFlame();
 
         // screen wrap
         wrap();
 
-        lifeTimer += dt;
-        if (lifeTimer > lifeTime) {
-            remove = true;
-        }
+        isAlive(dt);
     }
 
     public void draw(ShapeRenderer sr) {
