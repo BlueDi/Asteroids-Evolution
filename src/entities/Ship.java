@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.MathUtils;
 import managers.Game;
 import managers.Settings;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class Ship extends SpaceObject {
     private float lifeTime = Settings.SHIP_LIFETIME;
@@ -14,7 +14,7 @@ public class Ship extends SpaceObject {
     private boolean remove = false;
 
     private final int MAX_BULLETS = Settings.SHIP_MAX_BULLETS;
-    private ArrayList<Bullet> bullets;
+    private List<Bullet> bullets;
 
     private float[] flamex;
     private float[] flamey;
@@ -30,7 +30,7 @@ public class Ship extends SpaceObject {
 
     private float PI = (float) Math.PI;
 
-    public Ship(ArrayList<Bullet> bullets) {
+    public Ship(List<Bullet> bullets) {
         this.bullets = bullets;
 
         x = (float) Math.random() * Game.WIDTH / 2 + Game.WIDTH / 4;

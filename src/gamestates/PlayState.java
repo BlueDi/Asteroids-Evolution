@@ -16,9 +16,9 @@ import java.util.List;
 public class PlayState extends gamestates.GameState {
     private ShapeRenderer sr;
 
-    private ArrayList<Ship> ships;
-    private ArrayList<ArrayList<Bullet>> bullets;
-    private ArrayList<Asteroid> asteroids;
+    private List<Ship> ships;
+    private List<List<Bullet>> bullets;
+    private List<Asteroid> asteroids;
     private List<Food> food;
 
     private int numShips = Settings.NUMBER_OF_SHIPS;
@@ -122,7 +122,7 @@ public class PlayState extends gamestates.GameState {
         }
 
         // update ship bullets
-        for (ArrayList<Bullet> bullets_of_ship : bullets)
+        for (List<Bullet> bullets_of_ship : bullets)
             for (int i = 0; i < bullets_of_ship.size(); i++) {
                 bullets_of_ship.get(i).update(dt);
                 if (bullets_of_ship.get(i).shouldRemove()) {
@@ -175,7 +175,7 @@ public class PlayState extends gamestates.GameState {
      * Check if any Ship collided with a Food.
      */
     private void checkShipsFoodCollisions() {
-        for (Ship s : ships) {
+        for (Ship s : ships)
             for (int j = 0; j < food.size(); j++) {
                 Food f = food.get(j);
                 if (s.contains(f.getx(), f.gety())) {
@@ -184,7 +184,6 @@ public class PlayState extends gamestates.GameState {
                     break;
                 }
             }
-        }
     }
 
     /**
@@ -195,7 +194,7 @@ public class PlayState extends gamestates.GameState {
             Ship s = ships.get(i);
             for (int j = 0; j < bullets.size(); j++)
                 if (i != j) {
-                    ArrayList<Bullet> enemy_bullets = bullets.get(j);
+                    List<Bullet> enemy_bullets = bullets.get(j);
                     for (int k = 0; k < enemy_bullets.size(); k++) {
                         Bullet b = enemy_bullets.get(k);
                         if (s.contains(b.getx(), b.gety())) {
@@ -215,7 +214,7 @@ public class PlayState extends gamestates.GameState {
      * Check if any Bullet collided with an Asteroid.
      */
     private void checkBulletsAsteroidsCollisions() {
-        for (ArrayList<Bullet> bullets_flying : bullets)
+        for (List<Bullet> bullets_flying : bullets)
             for (int i = 0; i < bullets_flying.size(); i++) {
                 Bullet b = bullets_flying.get(i);
                 for (int j = 0; j < asteroids.size(); j++) {
@@ -244,7 +243,7 @@ public class PlayState extends gamestates.GameState {
     }
 
     private void drawBullets() {
-        for (ArrayList<Bullet> bullets_flying : bullets)
+        for (List<Bullet> bullets_flying : bullets)
             for (Bullet bullet : bullets_flying)
                 bullet.draw(sr);
     }
