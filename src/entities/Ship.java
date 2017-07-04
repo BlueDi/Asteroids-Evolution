@@ -114,10 +114,9 @@ public class Ship extends SpaceObject {
     }
 
     private float calculateDesiredOrientation(float closestX, float closestY) {
-        double desired_angle_radians = Math.atan2(closestY - y, closestX - x);
-        if (desired_angle_radians < 0)
-            desired_angle_radians += 2 * Math.PI;
-        return (float) desired_angle_radians;
+        float desired_angle_radians = (float) Math.atan2(closestY - y, closestX - x);
+        transform2pi(desired_angle_radians);
+        return desired_angle_radians;
     }
 
     private void rotateAndFly() {
@@ -142,11 +141,10 @@ public class Ship extends SpaceObject {
     /**
      * Searches the closest Food and flies in its direction.
      * TODO: converter de array de Food para array de SpaceObjects
-     * TODO: Naves estão com umas piruetas esquisitas, devem estar a rodar para o lado errado
      *
      * @param food Food to search
      */
-    public void nearestFood(List<Food> food) {
+    private void nearestFood(List<Food> food) {
         min_distance_to_food = 9999;
         Food closestFood = null;
         for (Food f : food) {
@@ -169,7 +167,7 @@ public class Ship extends SpaceObject {
      *
      * @param asteroids Asteroids to search
      */
-    public void nearestAsteroid(List<Asteroid> asteroids) {
+    private void nearestAsteroid(List<Asteroid> asteroids) {
         min_distance_to_asteroid = 9999;
         Asteroid closestAsteroid = null;
         for (Asteroid a : asteroids) {
@@ -187,6 +185,11 @@ public class Ship extends SpaceObject {
             desired += Settings.SHIP_DODGE_ANGLE;
             rotateAndFly();
         }
+    }
+
+    public void nearest(List<Food> food, List<Asteroid> asteroids) {
+        nearestFood(food);
+        nearestAsteroid(asteroids);
     }
 
     private void rotate(float dt) {
