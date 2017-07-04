@@ -26,20 +26,25 @@ abstract class SpaceObject {
     public float getx() {
         return x;
     }
+
     public float gety() {
         return y;
     }
+
     private float[] getShapex() {
         return shapex;
     }
+
     private float[] getShapey() {
         return shapey;
     }
+
     public boolean shouldRemove() {
         return remove;
     }
 
     public abstract void update(float dt);
+
     public abstract void draw(ShapeRenderer sr);
 
     /**
@@ -61,6 +66,11 @@ abstract class SpaceObject {
         y += dy * dt;
     }
 
+    /**
+     * Updates life timer.
+     *
+     * @param dt Time elapsed
+     */
     void isAlive(float dt) {
         lifeTimer += dt;
         if (lifeTimer >= lifeTime)

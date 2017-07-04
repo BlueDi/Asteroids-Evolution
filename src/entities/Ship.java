@@ -8,6 +8,9 @@ import managers.Settings;
 
 import java.util.List;
 
+/**
+ * TODO: talvez por as naves a terem que aprender que asteroides sao maus, e comida é bom
+ */
 public class Ship extends SpaceObject {
     private final int MAX_BULLETS = Settings.SHIP_MAX_BULLETS;
     private List<Bullet> bullets;
@@ -19,9 +22,11 @@ public class Ship extends SpaceObject {
     private boolean right;
     private boolean up;
 
-    private float maxSpeed = Settings.SHIP_MAX_SPEED;
-    private float acceleration = Settings.SHIP_ACCELERATION;
-    private float deceleration = Settings.SHIP_DECELERATION;
+    private float desired = 0f;
+
+    private float maxSpeed = Settings.SHIP_MAX_SPEED * Settings.TIME_MULTIPLIER;
+    private float acceleration = Settings.SHIP_ACCELERATION * Settings.TIME_MULTIPLIER;
+    private float deceleration = Settings.SHIP_DECELERATION * Settings.TIME_MULTIPLIER;
     private float acceleratingTimer;
 
     private double min_distance_to_food;
@@ -31,7 +36,7 @@ public class Ship extends SpaceObject {
 
     public Ship(List<Bullet> bullets) {
         this.bullets = bullets;
-        this.lifeTime = Settings.SHIP_LIFETIME;
+        this.lifeTime = Settings.SHIP_LIFETIME * Settings.TIME_MULTIPLIER;
 
         x = (float) Math.random() * Game.WIDTH / 2 + Game.WIDTH / 4;
         y = (float) Math.random() * Game.HEIGHT / 2 + Game.HEIGHT / 4;
@@ -115,7 +120,7 @@ public class Ship extends SpaceObject {
         return (float) desired_angle_radians;
     }
 
-    private void rotateAndFly(float desired) {
+    private void rotateAndFly() {
         float max_angle = (float) (desired + Settings.SHIP_SATISFIABLE_ANGLE);
         float min_angle = (float) (desired - Settings.SHIP_SATISFIABLE_ANGLE);
         transform2pi(max_angle);
@@ -135,34 +140,40 @@ public class Ship extends SpaceObject {
     }
 
     /**
-     * Searches the closest asteroid and flies in its direction.
-     * TODO: a nave ainda não vira diretamente para o asteroide.
-     * TODO: converter de array de Asteroids para array de SpaceObjects
+     * Searches the closest Food and flies in its direction.
+     * TODO: converter de array de Food para array de SpaceObjects
+     * TODO: Naves estão com umas piruetas esquisitas, devem estar a rodar para o lado errado
      *
-     * @param food Asteroids to search
+     * @param food Food to search
      */
     public void nearestFood(List<Food> food) {
         min_distance_to_food = 9999;
         Food closestFood = null;
         for (Food f : food) {
-            double distance = Math.abs(f.getx() - x + f.gety() - y);
+            double distance = Math.sqrt(Math.pow(f.getx() - x, 2) + Math.pow(f.gety() - y, 2));
             if (distance < min_distance_to_food) {
                 min_distance_to_food = distance;
                 closestFood = f;
             }
         }
 
-        float desired = 0;
+        desired = 0f;
         if (closestFood != null)
             desired = calculateDesiredOrientation(closestFood.getx(), closestFood.gety());
-        rotateAndFly(desired);
+        rotateAndFly();
     }
 
+    /**
+     * Searches the closest Asteroid and flies in the opposite direction.
+     * TODO: converter de array de Asteroids para array de SpaceObjects
+     *
+     * @param asteroids Asteroids to search
+     */
     public void nearestAsteroid(List<Asteroid> asteroids) {
         min_distance_to_asteroid = 9999;
         Asteroid closestAsteroid = null;
         for (Asteroid a : asteroids) {
-            double distance = Math.abs(a.getx() - x + a.gety() - y);
+            double distance = Math.sqrt(Math.pow(a.getx() - x, 2) + Math.pow(a.gety() - y, 2));
             if (distance < min_distance_to_asteroid) {
                 min_distance_to_asteroid = distance;
                 closestAsteroid = a;
@@ -170,19 +181,23 @@ public class Ship extends SpaceObject {
         }
 
         if (min_distance_to_asteroid < min_distance_to_food) {
-            float desired = 0;
+            desired = 0f;
             if (closestAsteroid != null)
                 desired = calculateDesiredOrientation(closestAsteroid.getx(), closestAsteroid.gety());
-            desired += Math.PI;
-            rotateAndFly(desired);
+            desired += Settings.SHIP_DODGE_ANGLE;
+            rotateAndFly();
         }
     }
 
     private void rotate(float dt) {
         if (left) {
             orientation += rotationSpeed * dt;
+            if (orientation > desired + Settings.SHIP_SATISFIABLE_ANGLE)
+                orientation = (float) (desired + Settings.SHIP_SATISFIABLE_ANGLE);
         } else if (right) {
             orientation -= rotationSpeed * dt;
+            if (orientation < desired - Settings.SHIP_SATISFIABLE_ANGLE)
+                orientation = (float) (desired + Settings.SHIP_SATISFIABLE_ANGLE);
         }
     }
 
@@ -191,9 +206,8 @@ public class Ship extends SpaceObject {
             dx += MathUtils.cos(orientation) * acceleration * dt;
             dy += MathUtils.sin(orientation) * acceleration * dt;
             acceleratingTimer += dt;
-            if (acceleratingTimer > 0.1f) {
+            if (acceleratingTimer > 0.1f)
                 acceleratingTimer = 0;
-            }
         } else {
             acceleratingTimer = 0;
         }
@@ -213,7 +227,6 @@ public class Ship extends SpaceObject {
 
     public void update(float dt) {
         rotate(dt);
-
         accelerate(dt);
         decelerate(dt);
         updatePosition(dt);

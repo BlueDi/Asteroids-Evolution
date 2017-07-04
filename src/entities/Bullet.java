@@ -9,7 +9,7 @@ public class Bullet extends SpaceObject {
         this.x = x;
         this.y = y;
         this.orientation = radians;
-        this.lifeTime = Settings.BULLET_LIFETIME;
+        this.lifeTime = Settings.BULLET_LIFETIME * Settings.TIME_MULTIPLIER;
 
         float speed = Settings.BULLET_SPEED;
         dx = MathUtils.cos(radians) * speed;

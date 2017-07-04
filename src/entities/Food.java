@@ -7,7 +7,7 @@ public class Food extends SpaceObject {
     public Food(float x, float y) {
         this.x = x;
         this.y = y;
-        this.lifeTime = Settings.FOOD_LIFETIME;
+        this.lifeTime = Settings.FOOD_LIFETIME * Settings.TIME_MULTIPLIER;
 
         width = Settings.FOOD_SIZE;
         height = Settings.FOOD_SIZE;

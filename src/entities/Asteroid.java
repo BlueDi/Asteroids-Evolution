@@ -18,11 +18,10 @@ public class Asteroid extends SpaceObject {
         this.x = x;
         this.y = y;
         this.type = type;
-        this.lifeTime = Settings.ASTEROID_LIFETIME;
+        this.lifeTime = Settings.ASTEROID_LIFETIME * Settings.TIME_MULTIPLIER;
+        this.rotationSpeed = Settings.ASTEROID_ROTATION;
 
         defineType();
-
-        rotationSpeed = MathUtils.random(-1, 1);
 
         orientation = MathUtils.random(2 * (float) Math.PI);
         dx = MathUtils.cos(orientation) * speed;
@@ -33,9 +32,8 @@ public class Asteroid extends SpaceObject {
         dists = new float[numPoints];
 
         int radius = width / 2;
-        for (int i = 0; i < numPoints; i++) {
+        for (int i = 0; i < numPoints; i++)
             dists[i] = MathUtils.random(radius / 2, radius);
-        }
 
         setShape();
     }
@@ -48,15 +46,15 @@ public class Asteroid extends SpaceObject {
         if (type == SMALL) {
             numPoints = 8;
             width = height = 12;
-            speed = MathUtils.random(70, 100);
+            speed = Settings.ASTEROID_SPEED_SMALL * Settings.TIME_MULTIPLIER;
         } else if (type == MEDIUM) {
             numPoints = 10;
             width = height = 20;
-            speed = MathUtils.random(50, 60);
+            speed = Settings.ASTEROID_SPEED_MEDIUM * Settings.TIME_MULTIPLIER;
         } else if (type == LARGE) {
             numPoints = 12;
             width = height = 40;
-            speed = MathUtils.random(20, 30);
+            speed = Settings.ASTEROID_SPEED_LARGE * Settings.TIME_MULTIPLIER;
         }
     }
 

@@ -22,7 +22,7 @@ public class PlayState extends gamestates.GameState {
     private List<Food> food;
 
     private int numShips = Settings.NUMBER_OF_SHIPS;
-    private int numAsteroids = Settings.INITIAL_NUMBER_OF_ASTEROIDS;
+    private int numAsteroids = Settings.NUMBER_OF_ASTEROIDS;
     private int numFood = Settings.NUMBER_OF_FOOD;
 
     public PlayState(GameStateManager gsm) {
