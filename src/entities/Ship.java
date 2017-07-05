@@ -179,7 +179,7 @@ public class Ship extends SpaceObject {
             }
         }
 
-        if (Math.abs(min_distance_to_asteroid - min_distance_to_food) < Settings.SHIP_DISTANCE_STOP_DODGE) {
+        if (min_distance_to_asteroid < Settings.SHIP_DISTANCE_STOP_DODGE) {
             float dodge_desired = 0f;
             if (closestAsteroid != null)
                 dodge_desired = calculateDesiredOrientation(closestAsteroid.getx(), closestAsteroid.gety());
