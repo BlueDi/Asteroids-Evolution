@@ -41,13 +41,6 @@ public class PlayState extends gamestates.GameState {
             bullets.add(new ArrayList<>());
             ships.add(new Ship(bullets.get(i)));
         }
-
-        asteroids.add(new Asteroid(100, 100, Asteroid.LARGE));
-        asteroids.add(new Asteroid(200, 100, Asteroid.MEDIUM));
-        asteroids.add(new Asteroid(300, 100, Asteroid.SMALL));
-
-        spawnAsteroids();
-        spawnFood();
     }
 
     private float[] generatePositionFarFromShip(int min_distance) {
@@ -65,9 +58,14 @@ public class PlayState extends gamestates.GameState {
         return position;
     }
 
-    private void spawnShip() {
+    private void spawnSingleShip() {
         bullets.add(new ArrayList<>());
         ships.add(new Ship(bullets.get(bullets.size() - 1)));
+    }
+
+    private void spawnShips() {
+        while (ships.size() < numShips)
+            spawnSingleShip();
     }
 
     /**
@@ -80,9 +78,7 @@ public class PlayState extends gamestates.GameState {
     }
 
     private void spawnAsteroids() {
-        asteroids.clear();
-
-        for (int i = 0; i < numAsteroids; i++)
+        while (asteroids.size() < numAsteroids)
             spawnSingleAsteroid();
     }
 
@@ -90,8 +86,10 @@ public class PlayState extends gamestates.GameState {
         if (a.getType() == Asteroid.LARGE) {
             asteroids.add(new Asteroid(a.getx(), a.gety(), Asteroid.MEDIUM));
             asteroids.add(new Asteroid(a.getx(), a.gety(), Asteroid.MEDIUM));
-        } else if (a.getType() == Asteroid.MEDIUM)
+        } else if (a.getType() == Asteroid.MEDIUM) {
             asteroids.add(new Asteroid(a.getx(), a.gety(), Asteroid.SMALL));
+            asteroids.add(new Asteroid(a.getx(), a.gety(), Asteroid.SMALL));
+        }
     }
 
     private void spawnSingleFood() {
@@ -100,9 +98,7 @@ public class PlayState extends gamestates.GameState {
     }
 
     private void spawnFood() {
-        food.clear();
-
-        for (int i = 0; i < numFood; i++)
+        while (food.size() < numFood)
             spawnSingleFood();
     }
 
@@ -152,13 +148,9 @@ public class PlayState extends gamestates.GameState {
         }
 
         checkCollisions();
-
-        while (ships.size() < numShips)
-            spawnShip();
-        while (asteroids.size() < numAsteroids)
-            spawnSingleAsteroid();
-        while (food.size() < numFood)
-            spawnSingleFood();
+        spawnShips();
+        spawnAsteroids();
+        spawnFood();
     }
 
     /**
