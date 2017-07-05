@@ -256,7 +256,8 @@ public class Ship extends SpaceObject {
     }
 
     public void draw(ShapeRenderer sr) {
-        sr.setColor(1, 1, 1, 1);
+        float blender = lifeTimer / lifeTime;
+        sr.setColor(blender, 1-blender, 0, 1);
         sr.begin(ShapeType.Line);
         for (int i = 0, j = shapex.length - 1; i < shapex.length; j = i++)
             sr.line(shapex[i], shapey[i], shapex[j], shapey[j]);
