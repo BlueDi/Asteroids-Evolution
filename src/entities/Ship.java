@@ -162,7 +162,8 @@ public class Ship extends SpaceObject {
     }
 
     /**
-     * Searches the closest Asteroid and flies in the opposite direction.
+     * Searches the closest Asteroid and, if the difference between it and the closest Food is less than
+     * Setting.SIP_DISNTACE_STOP_DODGE, the ship is rotated to fly in the opposite direction.
      * TODO: converter de array de Asteroids para array de SpaceObjects
      *
      * @param asteroids Asteroids to search
@@ -178,11 +179,17 @@ public class Ship extends SpaceObject {
             }
         }
 
-        if (min_distance_to_asteroid < min_distance_to_food) {
-            desired = 0f;
+        if (Math.abs(min_distance_to_asteroid - min_distance_to_food) < Settings.SHIP_DISTANCE_STOP_DODGE) {
+            float dodge_desired = 0f;
             if (closestAsteroid != null)
-                desired = calculateDesiredOrientation(closestAsteroid.getx(), closestAsteroid.gety());
-            desired += Settings.SHIP_DODGE_ANGLE;
+                dodge_desired = calculateDesiredOrientation(closestAsteroid.getx(), closestAsteroid.gety());
+            dodge_desired += Settings.SHIP_DODGE_ANGLE;
+            transform2pi(dodge_desired);
+            if (dodge_desired > desired)
+                desired -= (desired - dodge_desired);
+            else
+                desired += (desired - dodge_desired);
+            transform2pi(desired);
             rotateAndFly();
         }
     }
@@ -193,6 +200,8 @@ public class Ship extends SpaceObject {
     }
 
     private void rotate(float dt) {
+        transform2pi(desired);
+        transform2pi(orientation);
         if (left) {
             orientation += rotationSpeed * dt;
             if (orientation > desired + Settings.SHIP_SATISFIABLE_ANGLE)
@@ -202,6 +211,7 @@ public class Ship extends SpaceObject {
             if (orientation < desired - Settings.SHIP_SATISFIABLE_ANGLE)
                 orientation = (float) (desired + Settings.SHIP_SATISFIABLE_ANGLE);
         }
+        transform2pi(orientation);
     }
 
     private void accelerate(float dt) {

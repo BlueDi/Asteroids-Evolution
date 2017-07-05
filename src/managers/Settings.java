@@ -24,7 +24,8 @@ public final class Settings {
     public static float SHIP_ROTATION = (float) Math.PI;
     public static float SHIP_STARTING_ORIENTATION = (float) Math.PI / 2;
     public static double SHIP_SATISFIABLE_ANGLE = (float) Math.PI / 20;
-    public static double SHIP_DODGE_ANGLE = (float) Math.PI / 2;
+    public static double SHIP_DODGE_ANGLE = (float) Math.PI;
+    public static double SHIP_DISTANCE_STOP_DODGE = 30;
 
     //Bullet
     public static int BULLET_LIFETIME = 1;
