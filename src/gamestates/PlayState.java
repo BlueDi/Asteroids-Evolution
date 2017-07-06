@@ -48,8 +48,8 @@ public class PlayState extends gamestates.GameState {
         float[] position = new float[2];
 
         do {
-            position[0] = MathUtils.random(Game.WIDTH);
-            position[1] = MathUtils.random(Game.HEIGHT);
+            position[0] = MathUtils.random(Game.WIDTH - 200) + 100;
+            position[1] = MathUtils.random(Game.HEIGHT - 200) + 100;
             float dx = position[0] - ships.get(0).getx();
             float dy = position[1] - ships.get(0).gety();
             dist = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));

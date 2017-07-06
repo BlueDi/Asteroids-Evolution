@@ -19,7 +19,7 @@ public final class Settings {
     public static int SHIP_LIFETIME = 10;
     public static int SHIP_MAX_BULLETS = 4;
     public static float SHIP_MAX_SPEED = 30;
-    public static float SHIP_ACCELERATION = 20;
+    public static float SHIP_ACCELERATION = 30;
     public static float SHIP_DECELERATION = 10;
     public static float SHIP_ROTATION = (float) Math.PI;
     public static float SHIP_STARTING_ORIENTATION = (float) Math.PI / 2;

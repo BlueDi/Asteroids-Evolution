@@ -48,9 +48,11 @@ abstract class SpaceObject {
     public abstract void draw(ShapeRenderer sr);
 
     /**
-     * Se bater na borda passa para o outro lado.
+     * If SpaceObject gets to the border of the screen mirrors its position to the other side.
+     * TODO: talvez tirar
      */
     void wrap() {
+        /*
         if (x < 0)
             x = Game.WIDTH;
         if (x > Game.WIDTH)
@@ -59,6 +61,7 @@ abstract class SpaceObject {
             y = Game.HEIGHT;
         if (y > Game.HEIGHT)
             y = 0;
+        */
     }
 
     void updatePosition(float dt) {
