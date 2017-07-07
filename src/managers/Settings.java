@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.MathUtils;
 public final class Settings {
     public static int WINDOW_WIDTH = 1600;
     public static int WINDOW_HEIGHT = 800;
-    public static int TIME_MULTIPLIER = 2;
+    public static int TIME_MULTIPLIER = 1;
     public static int NUMBER_OF_SHIPS = 10;
     public static int NUMBER_OF_ASTEROIDS = 10;
     public static int NUMBER_OF_FOOD = 30;
@@ -17,16 +17,16 @@ public final class Settings {
     public static int DISTANCE_SHIP_ASTEROID = 50;
 
     //Ship
-    public static int SHIP_LIFETIME = 10;
+    public static int SHIP_LIFETIME = 5;
     public static int SHIP_MAX_BULLETS = 4;
-    public static float SHIP_MAX_SPEED = 30;
-    public static float SHIP_ACCELERATION = 30;
-    public static float SHIP_DECELERATION = 10;
+    public static float SHIP_MAX_SPEED = 60;
+    public static float SHIP_ACCELERATION = 60;
+    public static float SHIP_DECELERATION = 20;
     public static float SHIP_ROTATION = (float) Math.PI;
     public static float SHIP_STARTING_ORIENTATION = (float) Math.PI / 2;
     public static double SHIP_SATISFIABLE_ANGLE = (float) Math.PI / 20;
     public static double SHIP_DODGE_ANGLE = (float) Math.PI;
-    public static double SHIP_DISTANCE_STOP_DODGE = 30;
+    public static int SHIP_DISTANCE_DODGE = 100;
 
     //Bullet
     public static int BULLET_LIFETIME = 1;

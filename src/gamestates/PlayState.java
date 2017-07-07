@@ -26,6 +26,8 @@ public class PlayState extends gamestates.GameState {
     private int numAsteroids;
     private int numFood;
 
+    private int GENERATION_COUNTER;
+
     public PlayState(GameStateManager gsm) {
         super(gsm);
     }
@@ -41,11 +43,11 @@ public class PlayState extends gamestates.GameState {
 
         numShips = Settings.NUMBER_OF_SHIPS;
 
-        for (int i = 0; i < numShips; i++) {
-            bullets.add(new ArrayList<>());
-            ships.add(new Ship(bullets.get(i)));
-        }
         spawnShips();
+
+        if (Settings.DEBUG)
+            print();
+
         numAsteroids = Settings.NUMBER_OF_ASTEROIDS;
         numFood = Settings.NUMBER_OF_FOOD;
     }
@@ -79,8 +81,9 @@ public class PlayState extends gamestates.GameState {
         for (int i = 0; i < ships.size(); i++) {
             Ship s = ships.get(i);
             if (s.shouldRemove()) {
-                storedShips.add(new Ship(s));
+                storedShips.add(new Ship(s, s.getDistanceToDodge()));
                 ships.remove(i);
+                bullets.remove(i);
                 i--;
             }
         }
@@ -89,8 +92,7 @@ public class PlayState extends gamestates.GameState {
     private void evolution() {
         List<Float> listadasvidas = new ArrayList<>();
         float sumLifes = 0f;
-        for (int i = 0; i < storedShips.size(); i++) {
-            Ship s = storedShips.get(i);
+        for (Ship s : storedShips) {
             listadasvidas.add(s.getLifeTime());
             sumLifes += s.getLifeTime();
         }
@@ -109,9 +111,13 @@ public class PlayState extends gamestates.GameState {
             int j = 0;
             while (f > listadasvidas.get(j))
                 j++;
-            Ship s = new Ship(storedShips.get(j));
-            ships.add(s);
+            spawnSingleShip();
+            ships.get(ships.size() - 1).setDistanceToDodge(storedShips.get(j).getDistanceToDodge());
         }
+
+        if (Settings.DEBUG)
+            print();
+
         storedShips = new ArrayList<>();
     }
 
@@ -198,7 +204,6 @@ public class PlayState extends gamestates.GameState {
         }
 
         checkCollisions();
-        //spawnShips();
         spawnAsteroids();
         spawnFood();
     }
@@ -254,7 +259,7 @@ public class PlayState extends gamestates.GameState {
                         if (s.contains(b.getX(), b.getY())) {
                             enemy_bullets.remove(b);
                             ships.remove(i);
-                            //bullets.remove(i);
+                            bullets.remove(i);
                             i--;
                             j--;
                             break;
@@ -274,7 +279,7 @@ public class PlayState extends gamestates.GameState {
                 for (int j = 0; j < asteroids.size(); j++) {
                     Asteroid a = asteroids.get(j);
                     if (a.contains(b.getX(), b.getY())) {
-                        //bullets_flying.remove(b);
+                        bullets_flying.remove(b);
                         i--;
                         asteroids.remove(a);
                         splitAsteroid(a);
@@ -289,6 +294,13 @@ public class PlayState extends gamestates.GameState {
         checkShipsFoodCollisions();
         checkShipsAsteroidsCollisions();
         checkBulletsAsteroidsCollisions();
+    }
+
+    private void print() {
+        System.out.println("Generation " + GENERATION_COUNTER++ + ":");
+        for (Ship ship : ships)
+            System.out.print(ship.getDistanceToDodge() + " ");
+        System.out.print("\n\n");
     }
 
     private void drawShips() {

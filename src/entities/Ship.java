@@ -3,7 +3,6 @@ package entities;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.MathUtils;
-import managers.Game;
 import managers.Settings;
 
 import java.util.List;
@@ -29,6 +28,7 @@ public class Ship extends SpaceObject {
     private float deceleration = Settings.SHIP_DECELERATION * Settings.TIME_MULTIPLIER;
     private float acceleratingTimer;
 
+    private double distance_to_dodge;
     private double min_distance_to_food;
     private double min_distance_to_asteroid;
 
@@ -36,7 +36,7 @@ public class Ship extends SpaceObject {
 
     public Ship(List<Bullet> bullets) {
         this.bullets = bullets;
-        this.lifeTime = Settings.SHIP_LIFETIME * Settings.TIME_MULTIPLIER;
+        this.lifeTime = Settings.SHIP_LIFETIME / Settings.TIME_MULTIPLIER;
 
         setRandomPosition();
 
@@ -47,10 +47,16 @@ public class Ship extends SpaceObject {
 
         orientation = Settings.SHIP_STARTING_ORIENTATION;
         rotationSpeed = Settings.SHIP_ROTATION;
+        distance_to_dodge = MathUtils.random(1, Settings.SHIP_DISTANCE_DODGE);
     }
 
     public Ship(Ship s) {
         this(s.getBullets());
+    }
+
+    public Ship(Ship s, double distance_to_dodge) {
+        this(s);
+        this.distance_to_dodge = distance_to_dodge;
     }
 
     private List<Bullet> getBullets() {
@@ -106,8 +112,12 @@ public class Ship extends SpaceObject {
         lifeTime += t;
     }
 
-    public void resetLifeTime() {
-        lifeTime = Settings.SHIP_LIFETIME;
+    public double getDistanceToDodge() {
+        return distance_to_dodge;
+    }
+
+    public void setDistanceToDodge(double distance_to_dodge) {
+        this.distance_to_dodge = distance_to_dodge;
     }
 
     public void shoot() {
@@ -190,7 +200,7 @@ public class Ship extends SpaceObject {
             }
         }
 
-        if (min_distance_to_asteroid < Settings.SHIP_DISTANCE_STOP_DODGE) {
+        if (min_distance_to_asteroid < distance_to_dodge) {
             float dodge_desired = 0f;
             if (closestAsteroid != null)
                 dodge_desired = calculateDesiredOrientation(closestAsteroid.getX(), closestAsteroid.getY());
@@ -267,7 +277,7 @@ public class Ship extends SpaceObject {
         if (Settings.DEBUG) {
             sr.begin(ShapeType.Circle);
             sr.setColor(1, 0.5f, 0.5f, 1);
-            sr.circle(x, y, (float) Settings.SHIP_DISTANCE_STOP_DODGE);
+            sr.circle(x, y, (float) distance_to_dodge);
             sr.end();
         }
 
