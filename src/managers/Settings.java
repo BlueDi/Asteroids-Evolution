@@ -10,6 +10,7 @@ public final class Settings {
     public static int NUMBER_OF_SHIPS = 10;
     public static int NUMBER_OF_ASTEROIDS = 10;
     public static int NUMBER_OF_FOOD = 30;
+    public static boolean DEBUG = true;
 
     //PlayState
     public static int DISTANCE_SHIP_FOOD = 200;

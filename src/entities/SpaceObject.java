@@ -15,7 +15,7 @@ abstract class SpaceObject {
 
     float lifeTime;
     float lifeTimer = 0;
-    boolean remove = false;
+    private boolean remove = false;
 
     int width;
     int height;
@@ -23,19 +23,28 @@ abstract class SpaceObject {
     float[] shapex;
     float[] shapey;
 
-    public float getx() {
+    public float getX() {
         return x;
     }
 
-    public float gety() {
+    public float getY() {
         return y;
     }
 
-    private float[] getShapex() {
+    public void setRandomPosition() {
+        x = (float) Math.random() * Game.WIDTH / 2 + Game.WIDTH / 4;
+        y = (float) Math.random() * Game.HEIGHT / 2 + Game.HEIGHT / 4;
+    }
+
+    public float getLifeTime() {
+        return lifeTime;
+    }
+
+    private float[] getShapeX() {
         return shapex;
     }
 
-    private float[] getShapey() {
+    private float[] getShapeY() {
         return shapey;
     }
 
@@ -52,7 +61,6 @@ abstract class SpaceObject {
      * TODO: talvez tirar
      */
     void wrap() {
-        /*
         if (x < 0)
             x = Game.WIDTH;
         if (x > Game.WIDTH)
@@ -61,7 +69,6 @@ abstract class SpaceObject {
             y = Game.HEIGHT;
         if (y > Game.HEIGHT)
             y = 0;
-        */
     }
 
     void updatePosition(float dt) {
@@ -87,8 +94,8 @@ abstract class SpaceObject {
      * @return true se colidem, false senao
      */
     public boolean intersects(SpaceObject other) {
-        float[] sx = other.getShapex();
-        float[] sy = other.getShapey();
+        float[] sx = other.getShapeX();
+        float[] sy = other.getShapeY();
         for (int i = 0; i < sx.length; i++) {
             if (contains(sx[i], sy[i]))
                 return true;

@@ -38,8 +38,7 @@ public class Ship extends SpaceObject {
         this.bullets = bullets;
         this.lifeTime = Settings.SHIP_LIFETIME * Settings.TIME_MULTIPLIER;
 
-        x = (float) Math.random() * Game.WIDTH / 2 + Game.WIDTH / 4;
-        y = (float) Math.random() * Game.HEIGHT / 2 + Game.HEIGHT / 4;
+        setRandomPosition();
 
         shapex = new float[4];
         shapey = new float[4];
@@ -48,6 +47,14 @@ public class Ship extends SpaceObject {
 
         orientation = Settings.SHIP_STARTING_ORIENTATION;
         rotationSpeed = Settings.SHIP_ROTATION;
+    }
+
+    public Ship(Ship s) {
+        this(s.getBullets());
+    }
+
+    private List<Bullet> getBullets() {
+        return this.bullets;
     }
 
     private void setShape() {
@@ -99,6 +106,10 @@ public class Ship extends SpaceObject {
         lifeTime += t;
     }
 
+    public void resetLifeTime() {
+        lifeTime = Settings.SHIP_LIFETIME;
+    }
+
     public void shoot() {
         if (bullets.size() == MAX_BULLETS)
             return;
@@ -148,7 +159,7 @@ public class Ship extends SpaceObject {
         min_distance_to_food = 9999;
         Food closestFood = null;
         for (Food f : food) {
-            double distance = Math.sqrt(Math.pow(f.getx() - x, 2) + Math.pow(f.gety() - y, 2));
+            double distance = Math.sqrt(Math.pow(f.getX() - x, 2) + Math.pow(f.getY() - y, 2));
             if (distance < min_distance_to_food) {
                 min_distance_to_food = distance;
                 closestFood = f;
@@ -157,7 +168,7 @@ public class Ship extends SpaceObject {
 
         desired = 0f;
         if (closestFood != null)
-            desired = calculateDesiredOrientation(closestFood.getx(), closestFood.gety());
+            desired = calculateDesiredOrientation(closestFood.getX(), closestFood.getY());
         rotateAndFly();
     }
 
@@ -172,7 +183,7 @@ public class Ship extends SpaceObject {
         min_distance_to_asteroid = 9999;
         Asteroid closestAsteroid = null;
         for (Asteroid a : asteroids) {
-            double distance = Math.sqrt(Math.pow(a.getx() - x, 2) + Math.pow(a.gety() - y, 2));
+            double distance = Math.sqrt(Math.pow(a.getX() - x, 2) + Math.pow(a.getY() - y, 2));
             if (distance < min_distance_to_asteroid) {
                 min_distance_to_asteroid = distance;
                 closestAsteroid = a;
@@ -182,7 +193,7 @@ public class Ship extends SpaceObject {
         if (min_distance_to_asteroid < Settings.SHIP_DISTANCE_STOP_DODGE) {
             float dodge_desired = 0f;
             if (closestAsteroid != null)
-                dodge_desired = calculateDesiredOrientation(closestAsteroid.getx(), closestAsteroid.gety());
+                dodge_desired = calculateDesiredOrientation(closestAsteroid.getX(), closestAsteroid.getY());
             dodge_desired += Settings.SHIP_DODGE_ANGLE;
             transform2pi(dodge_desired);
             if (dodge_desired > desired)
@@ -249,23 +260,25 @@ public class Ship extends SpaceObject {
         if (up)
             setFlame();
 
-        // screen wrap
-        wrap();
-
         isAlive(dt);
     }
 
     public void draw(ShapeRenderer sr) {
+        if (Settings.DEBUG) {
+            sr.begin(ShapeType.Circle);
+            sr.setColor(1, 0.5f, 0.5f, 1);
+            sr.circle(x, y, (float) Settings.SHIP_DISTANCE_STOP_DODGE);
+            sr.end();
+        }
+
         float blender = lifeTimer / lifeTime;
-        sr.setColor(blender, 1-blender, 0, 1);
+        sr.setColor(blender, 1 - blender, 0, 1);
         sr.begin(ShapeType.Line);
         for (int i = 0, j = shapex.length - 1; i < shapex.length; j = i++)
             sr.line(shapex[i], shapey[i], shapex[j], shapey[j]);
-
         if (up)
             for (int i = 0, j = flamex.length - 1; i < flamex.length; j = i++)
                 sr.line(flamex[i], flamey[i], flamex[j], flamey[j]);
-
         sr.end();
     }
 }

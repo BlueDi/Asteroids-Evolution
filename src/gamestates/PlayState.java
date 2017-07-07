@@ -17,13 +17,14 @@ public class PlayState extends gamestates.GameState {
     private ShapeRenderer sr;
 
     private List<Ship> ships;
+    private List<Ship> storedShips;
     private List<List<Bullet>> bullets;
     private List<Asteroid> asteroids;
     private List<Food> food;
 
-    private int numShips = Settings.NUMBER_OF_SHIPS;
-    private int numAsteroids = Settings.NUMBER_OF_ASTEROIDS;
-    private int numFood = Settings.NUMBER_OF_FOOD;
+    private int numShips;
+    private int numAsteroids;
+    private int numFood;
 
     public PlayState(GameStateManager gsm) {
         super(gsm);
@@ -33,14 +34,20 @@ public class PlayState extends gamestates.GameState {
         sr = new ShapeRenderer();
 
         ships = new ArrayList<>();
+        storedShips = new ArrayList<>();
         bullets = new ArrayList<>();
         asteroids = new ArrayList<>();
         food = new ArrayList<>();
+
+        numShips = Settings.NUMBER_OF_SHIPS;
 
         for (int i = 0; i < numShips; i++) {
             bullets.add(new ArrayList<>());
             ships.add(new Ship(bullets.get(i)));
         }
+        spawnShips();
+        numAsteroids = Settings.NUMBER_OF_ASTEROIDS;
+        numFood = Settings.NUMBER_OF_FOOD;
     }
 
     private float[] generatePositionFarFromShip(int min_distance) {
@@ -50,8 +57,8 @@ public class PlayState extends gamestates.GameState {
         do {
             position[0] = MathUtils.random(Game.WIDTH - 200) + 100;
             position[1] = MathUtils.random(Game.HEIGHT - 200) + 100;
-            float dx = position[0] - ships.get(0).getx();
-            float dy = position[1] - ships.get(0).gety();
+            float dx = position[0] - ships.get(0).getX();
+            float dy = position[1] - ships.get(0).getY();
             dist = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
         } while (dist < min_distance);
 
@@ -66,6 +73,58 @@ public class PlayState extends gamestates.GameState {
     private void spawnShips() {
         while (ships.size() < numShips)
             spawnSingleShip();
+    }
+
+    private void storeAndCleanShips() {
+        for (int i = 0; i < ships.size(); i++) {
+            Ship s = ships.get(i);
+            if (s.shouldRemove()) {
+                storedShips.add(new Ship(s));
+                ships.remove(i);
+                i--;
+            }
+        }
+    }
+
+    private void evolution() {
+        List<Float> listadasvidas = new ArrayList<>();
+        float sumLifes = 0f;
+        for (int i = 0; i < storedShips.size(); i++) {
+            Ship s = storedShips.get(i);
+            listadasvidas.add(s.getLifeTime());
+            sumLifes += s.getLifeTime();
+        }
+
+        for (int i = 0; i < listadasvidas.size(); i++) {
+            if (i != 0)
+                listadasvidas.set(i, listadasvidas.get(i - 1) + (listadasvidas.get(i) / sumLifes));
+            else
+                listadasvidas.set(i, listadasvidas.get(i) / sumLifes);
+        }
+
+        ships = new ArrayList<>();
+        bullets = new ArrayList<>();
+        for (int i = 0; i < Settings.NUMBER_OF_SHIPS; i++) {
+            float f = (float) Math.random();
+            int j = 0;
+            while (f > listadasvidas.get(j))
+                j++;
+            Ship s = new Ship(storedShips.get(j));
+            ships.add(s);
+        }
+        storedShips = new ArrayList<>();
+    }
+
+    private void updateShips(float dt) {
+        for (Ship s : ships) {
+            s.nearest(food, asteroids);
+            s.update(dt);
+        }
+
+        storeAndCleanShips();
+
+        if (ships.isEmpty())
+            evolution();
     }
 
     /**
@@ -84,11 +143,11 @@ public class PlayState extends gamestates.GameState {
 
     private void splitAsteroid(Asteroid a) {
         if (a.getType() == Asteroid.LARGE) {
-            asteroids.add(new Asteroid(a.getx(), a.gety(), Asteroid.MEDIUM));
-            asteroids.add(new Asteroid(a.getx(), a.gety(), Asteroid.MEDIUM));
+            asteroids.add(new Asteroid(a.getX(), a.getY(), Asteroid.MEDIUM));
+            asteroids.add(new Asteroid(a.getX(), a.getY(), Asteroid.MEDIUM));
         } else if (a.getType() == Asteroid.MEDIUM) {
-            asteroids.add(new Asteroid(a.getx(), a.gety(), Asteroid.SMALL));
-            asteroids.add(new Asteroid(a.getx(), a.gety(), Asteroid.SMALL));
+            asteroids.add(new Asteroid(a.getX(), a.getY(), Asteroid.SMALL));
+            asteroids.add(new Asteroid(a.getX(), a.getY(), Asteroid.SMALL));
         }
     }
 
@@ -106,16 +165,7 @@ public class PlayState extends gamestates.GameState {
         // get user input
         handleInput();
 
-        // update ship
-        for (int i = 0; i < ships.size(); i++) {
-            Ship s = ships.get(i);
-            s.nearest(food, asteroids);
-            s.update(dt);
-            if (s.shouldRemove()) {
-                ships.remove(i);
-                i--;
-            }
-        }
+        updateShips(dt);
 
         // update ship bullets
         for (List<Bullet> bullets_of_ship : bullets)
@@ -137,7 +187,7 @@ public class PlayState extends gamestates.GameState {
             }
         }
 
-        // update asteroids
+        // update food
         for (int i = 0; i < food.size(); i++) {
             Food f = food.get(i);
             f.update(dt);
@@ -148,13 +198,14 @@ public class PlayState extends gamestates.GameState {
         }
 
         checkCollisions();
-        spawnShips();
+        //spawnShips();
         spawnAsteroids();
         spawnFood();
     }
 
     /**
      * Checks if any Ship collided with a Asteroid.
+     * TODO: Se eliminar as bullets depois tenho que as voltar a por na evolution.
      */
     private void checkShipsAsteroidsCollisions() {
         for (int i = 0; i < ships.size(); i++) {
@@ -163,7 +214,7 @@ public class PlayState extends gamestates.GameState {
                 Asteroid a = asteroids.get(j);
                 if (a.intersects(s)) {
                     ships.remove(i);
-                    bullets.remove(i);
+                    //bullets.remove(i);
                     i--;
                     asteroids.remove(j);
                     splitAsteroid(a);
@@ -180,7 +231,7 @@ public class PlayState extends gamestates.GameState {
         for (Ship s : ships)
             for (int j = 0; j < food.size(); j++) {
                 Food f = food.get(j);
-                if (s.contains(f.getx(), f.gety())) {
+                if (s.contains(f.getX(), f.getY())) {
                     s.setTimer(0);
                     food.remove(j);
                     break;
@@ -190,6 +241,7 @@ public class PlayState extends gamestates.GameState {
 
     /**
      * Check if any Ship collided with a Bullet.
+     * TODO: Se eliminar as bullets depois tenho que as voltar a por na evolution.
      */
     private void checkShipsBulletsCollisions() {
         for (int i = 0; i < ships.size(); i++) {
@@ -199,10 +251,10 @@ public class PlayState extends gamestates.GameState {
                     List<Bullet> enemy_bullets = bullets.get(j);
                     for (int k = 0; k < enemy_bullets.size(); k++) {
                         Bullet b = enemy_bullets.get(k);
-                        if (s.contains(b.getx(), b.gety())) {
+                        if (s.contains(b.getX(), b.getY())) {
                             enemy_bullets.remove(b);
                             ships.remove(i);
-                            bullets.remove(i);
+                            //bullets.remove(i);
                             i--;
                             j--;
                             break;
@@ -221,8 +273,8 @@ public class PlayState extends gamestates.GameState {
                 Bullet b = bullets_flying.get(i);
                 for (int j = 0; j < asteroids.size(); j++) {
                     Asteroid a = asteroids.get(j);
-                    if (a.contains(b.getx(), b.gety())) {
-                        bullets_flying.remove(b);
+                    if (a.contains(b.getX(), b.getY())) {
+                        //bullets_flying.remove(b);
                         i--;
                         asteroids.remove(a);
                         splitAsteroid(a);
