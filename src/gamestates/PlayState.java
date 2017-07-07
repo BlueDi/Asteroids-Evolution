@@ -81,12 +81,31 @@ public class PlayState extends gamestates.GameState {
         for (int i = 0; i < ships.size(); i++) {
             Ship s = ships.get(i);
             if (s.shouldRemove()) {
-                storedShips.add(new Ship(s, s.getDistanceToDodge()));
+                storedShips.add(new Ship(s, s.getDistanceToDodge(), s.getRotationSpeed()));
                 ships.remove(i);
                 bullets.remove(i);
                 i--;
             }
         }
+    }
+
+    /**
+     * Mutates the last element of ships.
+     *
+     * @param distance_to_dodge Old distance for the ship to start dodge asteroids
+     * @param rotation_speed Old rotation speed of the ship
+     */
+    private void mutate(double distance_to_dodge, float rotation_speed) {
+        double m = MathUtils.random(0, 100);
+        if (m > Settings.MUTATION_PROBABILITY && m < (Settings.MUTATION_PROBABILITY + (100 - Settings.MUTATION_PROBABILITY / 2))) {
+            ships.get(ships.size() - 1).setDistanceToDodge(distance_to_dodge + distance_to_dodge * Settings.MUTATION_VARIATION);
+            ships.get(ships.size() - 1).setRotationSpeed(rotation_speed + rotation_speed * Settings.MUTATION_VARIATION);
+        } else if (m > (Settings.MUTATION_PROBABILITY + (100 - Settings.MUTATION_PROBABILITY / 2))) {
+            ships.get(ships.size() - 1).setDistanceToDodge(distance_to_dodge - distance_to_dodge * Settings.MUTATION_VARIATION);
+            ships.get(ships.size() - 1).setRotationSpeed(rotation_speed - rotation_speed * Settings.MUTATION_VARIATION);
+        }
+        if(ships.get(ships.size() - 1).getDistanceToDodge() < 1)
+            ships.get(ships.size() - 1).setDistanceToDodge(1);
     }
 
     private void evolution() {
@@ -107,12 +126,13 @@ public class PlayState extends gamestates.GameState {
         ships = new ArrayList<>();
         bullets = new ArrayList<>();
         for (int i = 0; i < Settings.NUMBER_OF_SHIPS; i++) {
-            float f = (float) Math.random();
+            double f = Math.random();
             int j = 0;
             while (f > listadasvidas.get(j))
                 j++;
+            Ship oldShip = storedShips.get(j);
             spawnSingleShip();
-            ships.get(ships.size() - 1).setDistanceToDodge(storedShips.get(j).getDistanceToDodge());
+            mutate(oldShip.getDistanceToDodge(), oldShip.getRotationSpeed());
         }
 
         if (Settings.DEBUG)
@@ -299,7 +319,7 @@ public class PlayState extends gamestates.GameState {
     private void print() {
         System.out.println("Generation " + GENERATION_COUNTER++ + ":");
         for (Ship ship : ships)
-            System.out.print(ship.getDistanceToDodge() + " ");
+            System.out.print("[" + String.format("%2.0f", ship.getDistanceToDodge()) + "; " + String.format("%.2f", ship.getRotationSpeed()) + "] ");
         System.out.print("\n\n");
     }
 

@@ -50,13 +50,18 @@ public class Ship extends SpaceObject {
         distance_to_dodge = MathUtils.random(1, Settings.SHIP_DISTANCE_DODGE);
     }
 
-    public Ship(Ship s) {
+    public Ship(Ship s, double distance_to_dodge, float rotationSpeed) {
         this(s.getBullets());
+        this.distance_to_dodge = distance_to_dodge;
+        this.rotationSpeed = rotationSpeed;
     }
 
-    public Ship(Ship s, double distance_to_dodge) {
-        this(s);
-        this.distance_to_dodge = distance_to_dodge;
+    public float getRotationSpeed() {
+        return this.rotationSpeed;
+    }
+
+    public void setRotationSpeed(float rotationSpeed) {
+        this.rotationSpeed = rotationSpeed;
     }
 
     private List<Bullet> getBullets() {
