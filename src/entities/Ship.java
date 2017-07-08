@@ -257,8 +257,11 @@ public class Ship extends SpaceObject {
 
     private void accelerate(float dt) {
         if (up) {
-            dx += MathUtils.cos(orientation) * acceleration * dt;
-            dy += MathUtils.sin(orientation) * acceleration * dt;
+            float initialVelocity = (float) Math.sqrt(dx * dx + dy * dy);
+            if (initialVelocity < maxSpeed) {
+                dx += MathUtils.cos(orientation) * acceleration * dt;
+                dy += MathUtils.sin(orientation) * acceleration * dt;
+            }
             acceleratingTimer += dt;
             if (acceleratingTimer > 0.1f)
                 acceleratingTimer = 0;
@@ -272,10 +275,6 @@ public class Ship extends SpaceObject {
         if (vec > 0) {
             dx -= (dx / vec) * deceleration * dt;
             dy -= (dy / vec) * deceleration * dt;
-        }
-        if (vec > maxSpeed) {
-            dx = (dx / vec) * maxSpeed;
-            dy = (dy / vec) * maxSpeed;
         }
     }
 
