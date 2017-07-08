@@ -90,49 +90,85 @@ public class PlayState extends gamestates.GameState {
     }
 
     /**
-     * Mutates the last element of ships.
+     * Creates a mutant based on a Ship.
      *
-     * @param distance_to_dodge Old distance for the ship to start dodge asteroids
-     * @param rotation_speed Old rotation speed of the ship
+     * @param oldShip Mutant will be based on this ship
      */
-    private void mutate(double distance_to_dodge, float rotation_speed) {
+    private void createMutation(Ship oldShip) {
+        spawnSingleShip();
         double m = MathUtils.random(0, 100);
+        double distance_to_dodge = oldShip.getDistanceToDodge();
+        float rotation_speed = oldShip.getRotationSpeed();
+        float max_speed = oldShip.getMaxSpeed();
+        float acceleration = oldShip.getAcceleration();
+        float deceleration = oldShip.getDeceleration();
+
         if (m > Settings.MUTATION_PROBABILITY && m < (Settings.MUTATION_PROBABILITY + (100 - Settings.MUTATION_PROBABILITY / 2))) {
             ships.get(ships.size() - 1).setDistanceToDodge(distance_to_dodge + distance_to_dodge * Settings.MUTATION_VARIATION);
-            ships.get(ships.size() - 1).setRotationSpeed(rotation_speed + rotation_speed * Settings.MUTATION_VARIATION);
         } else if (m > (Settings.MUTATION_PROBABILITY + (100 - Settings.MUTATION_PROBABILITY / 2))) {
             ships.get(ships.size() - 1).setDistanceToDodge(distance_to_dodge - distance_to_dodge * Settings.MUTATION_VARIATION);
+        }
+        if (ships.get(ships.size() - 1).getDistanceToDodge() < 1)
+            ships.get(ships.size() - 1).setDistanceToDodge(1);
+
+        m = MathUtils.random(0, 100);
+        if (m > Settings.MUTATION_PROBABILITY && m < (Settings.MUTATION_PROBABILITY + (100 - Settings.MUTATION_PROBABILITY / 2))) {
+            ships.get(ships.size() - 1).setRotationSpeed(rotation_speed + rotation_speed * Settings.MUTATION_VARIATION);
+        } else if (m > (Settings.MUTATION_PROBABILITY + (100 - Settings.MUTATION_PROBABILITY / 2))) {
             ships.get(ships.size() - 1).setRotationSpeed(rotation_speed - rotation_speed * Settings.MUTATION_VARIATION);
         }
-        if(ships.get(ships.size() - 1).getDistanceToDodge() < 1)
-            ships.get(ships.size() - 1).setDistanceToDodge(1);
+
+        m = MathUtils.random(0, 100);
+        if (m > Settings.MUTATION_PROBABILITY && m < (Settings.MUTATION_PROBABILITY + (100 - Settings.MUTATION_PROBABILITY / 2))) {
+            ships.get(ships.size() - 1).setMaxSpeed(max_speed + max_speed * Settings.MUTATION_VARIATION);
+        } else if (m > (Settings.MUTATION_PROBABILITY + (100 - Settings.MUTATION_PROBABILITY / 2))) {
+            ships.get(ships.size() - 1).setMaxSpeed(max_speed - max_speed * Settings.MUTATION_VARIATION);
+        }
+
+        m = MathUtils.random(0, 100);
+        if (m > Settings.MUTATION_PROBABILITY && m < (Settings.MUTATION_PROBABILITY + (100 - Settings.MUTATION_PROBABILITY / 2))) {
+            ships.get(ships.size() - 1).setAcceleration(acceleration + acceleration * Settings.MUTATION_VARIATION);
+        } else if (m > (Settings.MUTATION_PROBABILITY + (100 - Settings.MUTATION_PROBABILITY / 2))) {
+            ships.get(ships.size() - 1).setAcceleration(acceleration - acceleration * Settings.MUTATION_VARIATION);
+        }
+
+        m = MathUtils.random(0, 100);
+        if (m > Settings.MUTATION_PROBABILITY && m < (Settings.MUTATION_PROBABILITY + (100 - Settings.MUTATION_PROBABILITY / 2))) {
+            ships.get(ships.size() - 1).setDeceleration(deceleration + deceleration * Settings.MUTATION_VARIATION);
+        } else if (m > (Settings.MUTATION_PROBABILITY + (100 - Settings.MUTATION_PROBABILITY / 2))) {
+            ships.get(ships.size() - 1).setDeceleration(deceleration - deceleration * Settings.MUTATION_VARIATION);
+        }
+    }
+
+    private List<Double> fitnessFunction() {
+        List<Double> lifeTimeList = new ArrayList<>();
+        double sumLifes = 0;
+        for (Ship s : storedShips) {
+            double fitness = Math.pow(s.getLifeTime(), 4);
+            lifeTimeList.add(fitness);
+            sumLifes += fitness;
+        }
+
+        lifeTimeList.set(0, lifeTimeList.get(0) / sumLifes);
+        for (int i = 1; i < lifeTimeList.size(); i++) {
+            lifeTimeList.set(i, lifeTimeList.get(i - 1) + (lifeTimeList.get(i) / sumLifes));
+        }
+
+        return lifeTimeList;
     }
 
     private void evolution() {
-        List<Float> listadasvidas = new ArrayList<>();
-        float sumLifes = 0f;
-        for (Ship s : storedShips) {
-            listadasvidas.add(s.getLifeTime());
-            sumLifes += s.getLifeTime();
-        }
-
-        for (int i = 0; i < listadasvidas.size(); i++) {
-            if (i != 0)
-                listadasvidas.set(i, listadasvidas.get(i - 1) + (listadasvidas.get(i) / sumLifes));
-            else
-                listadasvidas.set(i, listadasvidas.get(i) / sumLifes);
-        }
+        List<Double> lifeTimeList = fitnessFunction();
 
         ships = new ArrayList<>();
         bullets = new ArrayList<>();
         for (int i = 0; i < Settings.NUMBER_OF_SHIPS; i++) {
             double f = Math.random();
             int j = 0;
-            while (f > listadasvidas.get(j))
+            while (f > lifeTimeList.get(j))
                 j++;
             Ship oldShip = storedShips.get(j);
-            spawnSingleShip();
-            mutate(oldShip.getDistanceToDodge(), oldShip.getRotationSpeed());
+            createMutation(oldShip);
         }
 
         if (Settings.DEBUG)
@@ -260,7 +296,8 @@ public class PlayState extends gamestates.GameState {
             for (int j = 0; j < food.size(); j++) {
                 Food f = food.get(j);
                 if (s.contains(f.getX(), f.getY())) {
-                    s.setTimer(0);
+                    s.setLifeTimer(-2);
+                    s.setLifeTime(2);
                     food.remove(j);
                     break;
                 }

@@ -23,9 +23,9 @@ public class Ship extends SpaceObject {
 
     private float desired = 0f;
 
-    private float maxSpeed = Settings.SHIP_MAX_SPEED * Settings.TIME_MULTIPLIER;
-    private float acceleration = Settings.SHIP_ACCELERATION * Settings.TIME_MULTIPLIER;
-    private float deceleration = Settings.SHIP_DECELERATION * Settings.TIME_MULTIPLIER;
+    private float maxSpeed;
+    private float acceleration;
+    private float deceleration;
     private float acceleratingTimer;
 
     private double distance_to_dodge;
@@ -46,7 +46,10 @@ public class Ship extends SpaceObject {
         flamey = new float[3];
 
         orientation = Settings.SHIP_STARTING_ORIENTATION;
-        rotationSpeed = Settings.SHIP_ROTATION;
+        maxSpeed = MathUtils.random(10, Settings.SHIP_MAX_SPEED) * Settings.TIME_MULTIPLIER;
+        acceleration = MathUtils.random(10, Settings.SHIP_MAX_ACCELERATION) * Settings.TIME_MULTIPLIER;
+        deceleration = MathUtils.random(10, Settings.SHIP_MAX_DECELERATION) * Settings.TIME_MULTIPLIER;
+        rotationSpeed = MathUtils.random(2, Settings.SHIP_ROTATION);
         distance_to_dodge = MathUtils.random(1, Settings.SHIP_DISTANCE_DODGE);
     }
 
@@ -56,12 +59,28 @@ public class Ship extends SpaceObject {
         this.rotationSpeed = rotationSpeed;
     }
 
-    public float getRotationSpeed() {
-        return this.rotationSpeed;
+    public float getMaxSpeed() {
+        return maxSpeed;
     }
 
-    public void setRotationSpeed(float rotationSpeed) {
-        this.rotationSpeed = rotationSpeed;
+    public void setMaxSpeed(float maxSpeed) {
+        this.maxSpeed = maxSpeed;
+    }
+
+    public float getAcceleration() {
+        return acceleration;
+    }
+
+    public void setAcceleration(float acceleration) {
+        this.acceleration = acceleration;
+    }
+
+    public float getDeceleration() {
+        return deceleration;
+    }
+
+    public void setDeceleration(float deceleration) {
+        this.deceleration = deceleration;
     }
 
     private List<Bullet> getBullets() {
@@ -112,10 +131,6 @@ public class Ship extends SpaceObject {
         up = b;
     }
 
-    public void setTimer(int t) {
-        lifeTimer = t;
-        lifeTime += t;
-    }
 
     public double getDistanceToDodge() {
         return distance_to_dodge;
@@ -131,18 +146,9 @@ public class Ship extends SpaceObject {
         bullets.add(new Bullet(x, y, orientation));
     }
 
-    private void transform2pi(float n) {
-        while (n > 2 * Math.PI)
-            n -= 2 * Math.PI;
-
-        while (n < 2 * Math.PI)
-            n += 2 * Math.PI;
-    }
-
     private float calculateDesiredOrientation(float closestX, float closestY) {
         float desired_angle_radians = (float) Math.atan2(closestY - y, closestX - x);
-        transform2pi(desired_angle_radians);
-        return desired_angle_radians;
+        return transform2pi(desired_angle_radians);
     }
 
     private void rotateAndFly() {

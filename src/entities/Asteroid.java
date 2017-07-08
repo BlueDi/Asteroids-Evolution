@@ -19,7 +19,7 @@ public class Asteroid extends SpaceObject {
         this.y = y;
         this.type = type;
         this.lifeTime = Settings.ASTEROID_LIFETIME * Settings.TIME_MULTIPLIER;
-        this.rotationSpeed = Settings.ASTEROID_ROTATION;
+        this.rotationSpeed = MathUtils.random(-Settings.ASTEROID_ROTATION, Settings.ASTEROID_ROTATION);
 
         defineType();
 
