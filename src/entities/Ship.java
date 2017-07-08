@@ -53,6 +53,15 @@ public class Ship extends SpaceObject {
         distance_to_dodge = MathUtils.random(1, Settings.SHIP_DISTANCE_DODGE);
     }
 
+    public Ship(Ship s) {
+        this(s.getBullets());
+        this.maxSpeed = s.getMaxSpeed();
+        this.acceleration = s.getAcceleration();
+        this.deceleration = s.getDeceleration();
+        this.rotationSpeed = s.rotationSpeed;
+        this.distance_to_dodge = s.getDistanceToDodge();
+    }
+
     public Ship(Ship s, double distance_to_dodge, float rotationSpeed) {
         this(s.getBullets());
         this.distance_to_dodge = distance_to_dodge;

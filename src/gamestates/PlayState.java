@@ -26,9 +26,19 @@ public class PlayState extends gamestates.GameState {
     private int numFood;
 
     private int GENERATION_COUNTER;
+    private int ELITISM;
 
     public PlayState(GameStateManager gsm) {
         super(gsm);
+    }
+
+    private void setElitism(int elitism) {
+        if (elitism > numShips)
+            ELITISM = numShips;
+        else if (elitism < 0)
+            ELITISM = 0;
+        else
+            ELITISM = elitism;
     }
 
     public void init() {
@@ -41,6 +51,8 @@ public class PlayState extends gamestates.GameState {
         food = new ArrayList<>();
 
         numShips = Settings.NUMBER_OF_SHIPS;
+
+        setElitism(Settings.ELITISM);
 
         spawnShips();
 
@@ -150,13 +162,22 @@ public class PlayState extends gamestates.GameState {
         return lifeTimeList;
     }
 
+    private void elitism() {
+        for (int i = (storedShips.size() - 1); i >= (storedShips.size() - ELITISM - 1); i--) {
+            bullets.add(new ArrayList<>());
+            ships.add(new Ship(storedShips.get(i)));
+        }
+    }
+
     private void evolution() {
-        List<Double> lifeTimeList = fitnessFunction();
         ships = new ArrayList<>();
         bullets = new ArrayList<>();
-        int[] childOfWho = new int[Settings.NUMBER_OF_SHIPS];
+        int[] childOfWho = new int[numShips];
 
-        for (int i = 0; i < Settings.NUMBER_OF_SHIPS; i++) {
+        elitism();
+
+        List<Double> lifeTimeList = fitnessFunction();
+        for (int i = 0; i < (numShips - ELITISM); i++) {
             double f = Math.random();
             int j = 0;
             while (f > lifeTimeList.get(j))

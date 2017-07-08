@@ -12,6 +12,7 @@ public final class Settings {
     public static int NUMBER_OF_FOOD = 30;
     public static int MUTATION_PROBABILITY = 50;
     public static float MUTATION_VARIATION = 0.05f;
+    public static int ELITISM = 3;
 
     //PlayState
     public static int DISTANCE_SHIP_FOOD = 200;
