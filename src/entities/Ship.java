@@ -34,6 +34,11 @@ public class Ship extends SpaceObject {
 
     private float PI = (float) Math.PI;
 
+    /**
+     * Creates a new Ship with random stats.
+     *
+     * @param bullets Ship's Bullets list
+     */
     public Ship(List<Bullet> bullets) {
         this.bullets = bullets;
         this.lifeTime = Settings.SHIP_LIFETIME / Settings.TIME_MULTIPLIER;
@@ -53,6 +58,11 @@ public class Ship extends SpaceObject {
         distance_to_dodge = MathUtils.random(1, Settings.SHIP_DISTANCE_DODGE);
     }
 
+    /**
+     * Clones the Ship received.
+     *
+     * @param s Ship to clone
+     */
     public Ship(Ship s) {
         this(s.getBullets());
         this.maxSpeed = s.getMaxSpeed();
@@ -60,12 +70,6 @@ public class Ship extends SpaceObject {
         this.deceleration = s.getDeceleration();
         this.rotationSpeed = s.rotationSpeed;
         this.distance_to_dodge = s.getDistanceToDodge();
-    }
-
-    public Ship(Ship s, double distance_to_dodge, float rotationSpeed) {
-        this(s.getBullets());
-        this.distance_to_dodge = distance_to_dodge;
-        this.rotationSpeed = rotationSpeed;
     }
 
     public float getMaxSpeed() {
@@ -149,17 +153,29 @@ public class Ship extends SpaceObject {
         this.distance_to_dodge = distance_to_dodge;
     }
 
+    /**
+     * Shoots a bullet.
+     */
     public void shoot() {
-        if (bullets.size() == MAX_BULLETS)
-            return;
-        bullets.add(new Bullet(x, y, orientation));
+        if (bullets.size() < MAX_BULLETS)
+            bullets.add(new Bullet(x, y, orientation));
     }
 
+    /**
+     * Calculates the desired angle (radian) the ship should take.
+     *
+     * @param closestX X final coord
+     * @param closestY Y final coord
+     * @return Angle (radian) the ship should rotate to
+     */
     private float calculateDesiredOrientation(float closestX, float closestY) {
         float desired_angle_radians = (float) Math.atan2(closestY - y, closestX - x);
         return transform2pi(desired_angle_radians);
     }
 
+    /**
+     * Calculates if the Ship should rotate or fly.
+     */
     private void rotateAndFly() {
         float max_angle = (float) (desired + Settings.SHIP_SATISFIABLE_ANGLE);
         float min_angle = (float) (desired - Settings.SHIP_SATISFIABLE_ANGLE);
@@ -185,7 +201,7 @@ public class Ship extends SpaceObject {
      *
      * @param food Food to search
      */
-    private void nearestFood(List<Food> food) {
+    private void closestFood(List<Food> food) {
         min_distance_to_food = 9999;
         Food closestFood = null;
         for (Food f : food) {
@@ -209,7 +225,7 @@ public class Ship extends SpaceObject {
      *
      * @param asteroids Asteroids to search
      */
-    private void nearestAsteroid(List<Asteroid> asteroids) {
+    private void closestAsteroid(List<Asteroid> asteroids) {
         min_distance_to_asteroid = 9999;
         Asteroid closestAsteroid = null;
         for (Asteroid a : asteroids) {
@@ -235,11 +251,23 @@ public class Ship extends SpaceObject {
         }
     }
 
-    public void nearest(List<Food> food, List<Asteroid> asteroids) {
-        nearestFood(food);
-        nearestAsteroid(asteroids);
+    /**
+     * Calculates the closest SpaceObject to the Ship.
+     *
+     * @param food      All the food
+     * @param asteroids All the asteroids
+     */
+    public void closest(List<Food> food, List<Asteroid> asteroids) {
+        closestFood(food);
+        closestAsteroid(asteroids);
     }
 
+    /**
+     * Rotates the Ship into the desired orientation.
+     * The Ship rotation isn't instantaneous, so it must receive the time elapsed.
+     *
+     * @param dt Time elapsed
+     */
     private void rotate(float dt) {
         transform2pi(desired);
         transform2pi(orientation);
@@ -255,6 +283,12 @@ public class Ship extends SpaceObject {
         transform2pi(orientation);
     }
 
+    /**
+     * Acceleration.
+     * If the Ship velocity is less than its max speed, increase speed.
+     *
+     * @param dt Time elapsed
+     */
     private void accelerate(float dt) {
         if (up) {
             float initialVelocity = (float) Math.sqrt(dx * dx + dy * dy);
@@ -270,6 +304,12 @@ public class Ship extends SpaceObject {
         }
     }
 
+    /**
+     * Friction.
+     * Maybe a Space Ship shouldn't have friction...
+     *
+     * @param dt Time elapsed
+     */
     private void decelerate(float dt) {
         float vec = (float) Math.sqrt(dx * dx + dy * dy);
         if (vec > 0) {
@@ -278,6 +318,11 @@ public class Ship extends SpaceObject {
         }
     }
 
+    /**
+     * Update the stats of the ship.
+     *
+     * @param dt Time elapsed
+     */
     public void update(float dt) {
         rotate(dt);
         accelerate(dt);
@@ -292,10 +337,20 @@ public class Ship extends SpaceObject {
         isAlive(dt);
     }
 
+    /**
+     * Representation of the ship has a String.
+     *
+     * @return String with Ship stats
+     */
     public String toString() {
         return "[" + String.format("%3.0f", maxSpeed) + "; " + String.format("%3.0f", acceleration) + "; " + String.format("%3.0f", deceleration) + "; " + String.format("%2.0f", distance_to_dodge) + "; " + String.format("%.2f", rotationSpeed) + "]";
     }
 
+    /**
+     * Draws the ship into the ShapeRenderer.
+     *
+     * @param sr ShapeRenderer where the Ship will be drawn.
+     */
     public void draw(ShapeRenderer sr) {
         if (Settings.DEBUG) {
             sr.begin(ShapeType.Circle);
