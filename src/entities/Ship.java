@@ -278,6 +278,10 @@ public class Ship extends SpaceObject {
         isAlive(dt);
     }
 
+    public String toString() {
+        return "[" + String.format("%3.0f", maxSpeed) + "; " + String.format("%3.0f", acceleration) + "; " + String.format("%3.0f", deceleration) + "; " + String.format("%2.0f", distance_to_dodge) + "; " + String.format("%.2f", rotationSpeed) + "] ";
+    }
+
     public void draw(ShapeRenderer sr) {
         if (Settings.DEBUG) {
             sr.begin(ShapeType.Circle);

@@ -147,6 +147,9 @@ public class PlayState extends gamestates.GameState {
             s.update(dt);
         }
 
+        if (Settings.DEBUG && ships.size() == 1 && ships.get(0).shouldRemove())
+            printBestShip();
+
         storeAndCleanShips();
 
         if (ships.isEmpty())
@@ -316,10 +319,14 @@ public class PlayState extends gamestates.GameState {
         checkBulletsAsteroidsCollisions();
     }
 
+    private void printBestShip() {
+        System.out.println("Generation " + GENERATION_COUNTER + " Best Ship:\n" + ships.get(0));
+    }
+
     private void print() {
         System.out.println("Generation " + GENERATION_COUNTER++ + ":");
         for (Ship ship : ships)
-            System.out.print("[" + String.format("%2.0f", ship.getDistanceToDodge()) + "; " + String.format("%.2f", ship.getRotationSpeed()) + "] ");
+            System.out.print(ship);
         System.out.print("\n\n");
     }
 
