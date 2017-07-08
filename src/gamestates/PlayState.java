@@ -81,47 +81,56 @@ public class PlayState extends gamestates.GameState {
     private void createMutation(Ship oldShip) {
         spawnSingleShip();
         double m = MathUtils.random(0, 100);
+        int min_mutation_probability = Settings.MUTATION_PROBABILITY;
+        int med_mutation_probability = Settings.MUTATION_PROBABILITY + (100 - Settings.MUTATION_PROBABILITY / 2);
+        float mutation_variation = Settings.MUTATION_VARIATION;
         double distance_to_dodge = oldShip.getDistanceToDodge();
         float rotation_speed = oldShip.getRotationSpeed();
         float max_speed = oldShip.getMaxSpeed();
         float acceleration = oldShip.getAcceleration();
         float deceleration = oldShip.getDeceleration();
+        Ship mutantShip = ships.get(ships.size() - 1);
 
-        if (m > Settings.MUTATION_PROBABILITY && m < (Settings.MUTATION_PROBABILITY + (100 - Settings.MUTATION_PROBABILITY / 2))) {
-            ships.get(ships.size() - 1).setDistanceToDodge(distance_to_dodge + distance_to_dodge * Settings.MUTATION_VARIATION);
-        } else if (m > (Settings.MUTATION_PROBABILITY + (100 - Settings.MUTATION_PROBABILITY / 2))) {
-            ships.get(ships.size() - 1).setDistanceToDodge(distance_to_dodge - distance_to_dodge * Settings.MUTATION_VARIATION);
-        }
-        if (ships.get(ships.size() - 1).getDistanceToDodge() < 1)
-            ships.get(ships.size() - 1).setDistanceToDodge(1);
-
-        m = MathUtils.random(0, 100);
-        if (m > Settings.MUTATION_PROBABILITY && m < (Settings.MUTATION_PROBABILITY + (100 - Settings.MUTATION_PROBABILITY / 2))) {
-            ships.get(ships.size() - 1).setRotationSpeed(rotation_speed + rotation_speed * Settings.MUTATION_VARIATION);
-        } else if (m > (Settings.MUTATION_PROBABILITY + (100 - Settings.MUTATION_PROBABILITY / 2))) {
-            ships.get(ships.size() - 1).setRotationSpeed(rotation_speed - rotation_speed * Settings.MUTATION_VARIATION);
-        }
+        if (m > min_mutation_probability && m < med_mutation_probability) {
+            mutantShip.setDistanceToDodge(distance_to_dodge + distance_to_dodge * mutation_variation);
+        } else if (m >= med_mutation_probability) {
+            mutantShip.setDistanceToDodge(distance_to_dodge - distance_to_dodge * mutation_variation);
+        } else
+            mutantShip.setDistanceToDodge(distance_to_dodge);
+        if (mutantShip.getDistanceToDodge() < 1)
+            mutantShip.setDistanceToDodge(1);
 
         m = MathUtils.random(0, 100);
-        if (m > Settings.MUTATION_PROBABILITY && m < (Settings.MUTATION_PROBABILITY + (100 - Settings.MUTATION_PROBABILITY / 2))) {
-            ships.get(ships.size() - 1).setMaxSpeed(max_speed + max_speed * Settings.MUTATION_VARIATION);
-        } else if (m > (Settings.MUTATION_PROBABILITY + (100 - Settings.MUTATION_PROBABILITY / 2))) {
-            ships.get(ships.size() - 1).setMaxSpeed(max_speed - max_speed * Settings.MUTATION_VARIATION);
-        }
+        if (m > min_mutation_probability && m < med_mutation_probability) {
+            mutantShip.setRotationSpeed(rotation_speed + rotation_speed * mutation_variation);
+        } else if (m >= med_mutation_probability) {
+            mutantShip.setRotationSpeed(rotation_speed - rotation_speed * mutation_variation);
+        } else
+            mutantShip.setRotationSpeed(rotation_speed);
 
         m = MathUtils.random(0, 100);
-        if (m > Settings.MUTATION_PROBABILITY && m < (Settings.MUTATION_PROBABILITY + (100 - Settings.MUTATION_PROBABILITY / 2))) {
-            ships.get(ships.size() - 1).setAcceleration(acceleration + acceleration * Settings.MUTATION_VARIATION);
-        } else if (m > (Settings.MUTATION_PROBABILITY + (100 - Settings.MUTATION_PROBABILITY / 2))) {
-            ships.get(ships.size() - 1).setAcceleration(acceleration - acceleration * Settings.MUTATION_VARIATION);
-        }
+        if (m > min_mutation_probability && m < med_mutation_probability) {
+            mutantShip.setMaxSpeed(max_speed + max_speed * mutation_variation);
+        } else if (m >= med_mutation_probability) {
+            mutantShip.setMaxSpeed(max_speed - max_speed * mutation_variation);
+        } else
+            mutantShip.setMaxSpeed(max_speed);
 
         m = MathUtils.random(0, 100);
-        if (m > Settings.MUTATION_PROBABILITY && m < (Settings.MUTATION_PROBABILITY + (100 - Settings.MUTATION_PROBABILITY / 2))) {
-            ships.get(ships.size() - 1).setDeceleration(deceleration + deceleration * Settings.MUTATION_VARIATION);
-        } else if (m > (Settings.MUTATION_PROBABILITY + (100 - Settings.MUTATION_PROBABILITY / 2))) {
-            ships.get(ships.size() - 1).setDeceleration(deceleration - deceleration * Settings.MUTATION_VARIATION);
-        }
+        if (m > min_mutation_probability && m < med_mutation_probability) {
+            mutantShip.setAcceleration(acceleration + acceleration * mutation_variation);
+        } else if (m >= med_mutation_probability) {
+            mutantShip.setAcceleration(acceleration - acceleration * mutation_variation);
+        } else
+            mutantShip.setAcceleration(acceleration);
+
+        m = MathUtils.random(0, 100);
+        if (m > min_mutation_probability && m < med_mutation_probability) {
+            mutantShip.setDeceleration(deceleration + deceleration * mutation_variation);
+        } else if (m >= med_mutation_probability) {
+            mutantShip.setDeceleration(deceleration - deceleration * mutation_variation);
+        } else
+            mutantShip.setDeceleration(deceleration);
     }
 
     private List<Double> fitnessFunction() {
