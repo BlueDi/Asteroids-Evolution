@@ -41,6 +41,14 @@ abstract class SpaceObject {
      * Places the SpaceObject in a position from 25% to 75% of the screen.
      */
     void setRandomPosition() {
+        x = (float) Math.random() * Game.WIDTH;
+        y = (float) Math.random() * Game.HEIGHT;
+    }
+
+    /**
+     * Places the SpaceObject in a position from 25% to 75% of the screen.
+     */
+    void setRandomLimitedPosition() {
         x = (float) Math.random() * Game.WIDTH / 2 + Game.WIDTH / 4;
         y = (float) Math.random() * Game.HEIGHT / 2 + Game.HEIGHT / 4;
     }

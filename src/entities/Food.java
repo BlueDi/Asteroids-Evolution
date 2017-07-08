@@ -4,13 +4,12 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import managers.Settings;
 
 public class Food extends SpaceObject {
-    public Food(float x, float y) {
-        this.x = x;
-        this.y = y;
+    public Food() {
         this.lifeTime = Settings.FOOD_LIFETIME * Settings.TIME_MULTIPLIER;
+        this.width = Settings.FOOD_SIZE;
+        this.height = Settings.FOOD_SIZE;
 
-        width = Settings.FOOD_SIZE;
-        height = Settings.FOOD_SIZE;
+        setRandomPosition();
     }
 
     public void update(float dt) {

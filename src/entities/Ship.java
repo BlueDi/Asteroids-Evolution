@@ -38,7 +38,7 @@ public class Ship extends SpaceObject {
         this.bullets = bullets;
         this.lifeTime = Settings.SHIP_LIFETIME / Settings.TIME_MULTIPLIER;
 
-        setRandomPosition();
+        setRandomLimitedPosition();
 
         shapex = new float[4];
         shapey = new float[4];
@@ -285,7 +285,7 @@ public class Ship extends SpaceObject {
     }
 
     public String toString() {
-        return "[" + String.format("%3.0f", maxSpeed) + "; " + String.format("%3.0f", acceleration) + "; " + String.format("%3.0f", deceleration) + "; " + String.format("%2.0f", distance_to_dodge) + "; " + String.format("%.2f", rotationSpeed) + "] ";
+        return "[" + String.format("%3.0f", maxSpeed) + "; " + String.format("%3.0f", acceleration) + "; " + String.format("%3.0f", deceleration) + "; " + String.format("%2.0f", distance_to_dodge) + "; " + String.format("%.2f", rotationSpeed) + "]";
     }
 
     public void draw(ShapeRenderer sr) {

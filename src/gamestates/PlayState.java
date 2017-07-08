@@ -6,7 +6,6 @@ import entities.Asteroid;
 import entities.Bullet;
 import entities.Food;
 import entities.Ship;
-import managers.Game;
 import managers.GameStateManager;
 import managers.Settings;
 
@@ -50,21 +49,6 @@ public class PlayState extends gamestates.GameState {
 
         numAsteroids = Settings.NUMBER_OF_ASTEROIDS;
         numFood = Settings.NUMBER_OF_FOOD;
-    }
-
-    private float[] generatePositionFarFromShip(int min_distance) {
-        double dist;
-        float[] position = new float[2];
-
-        do {
-            position[0] = MathUtils.random(Game.WIDTH - 200) + 100;
-            position[1] = MathUtils.random(Game.HEIGHT - 200) + 100;
-            float dx = position[0] - ships.get(0).getX();
-            float dy = position[1] - ships.get(0).getY();
-            dist = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
-        } while (dist < min_distance);
-
-        return position;
     }
 
     private void spawnSingleShip() {
@@ -199,11 +183,9 @@ public class PlayState extends gamestates.GameState {
 
     /**
      * Creates a new Asteroid.
-     * TODO: decidir se mantenho a verificação de proximidade da posição inicial do asteroide à nave.
      */
     private void spawnSingleAsteroid() {
-        float[] position = generatePositionFarFromShip(Settings.DISTANCE_SHIP_ASTEROID);
-        asteroids.add(new Asteroid(position[0], position[1], Asteroid.LARGE));
+        asteroids.add(new Asteroid(Asteroid.LARGE));
     }
 
     private void spawnAsteroids() {
@@ -222,8 +204,7 @@ public class PlayState extends gamestates.GameState {
     }
 
     private void spawnSingleFood() {
-        float[] position = generatePositionFarFromShip(Settings.DISTANCE_SHIP_FOOD);
-        food.add(new Food(position[0], position[1]));
+        food.add(new Food());
     }
 
     private void spawnFood() {
@@ -274,7 +255,6 @@ public class PlayState extends gamestates.GameState {
 
     /**
      * Checks if any Ship collided with a Asteroid.
-     * TODO: Se eliminar as bullets depois tenho que as voltar a por na evolution.
      */
     private void checkShipsAsteroidsCollisions() {
         for (int i = 0; i < ships.size(); i++) {
