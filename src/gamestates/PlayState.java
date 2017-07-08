@@ -46,7 +46,7 @@ public class PlayState extends gamestates.GameState {
         spawnShips();
 
         if (Settings.DEBUG)
-            print();
+            printPopulation();
 
         numAsteroids = Settings.NUMBER_OF_ASTEROIDS;
         numFood = Settings.NUMBER_OF_FOOD;
@@ -159,20 +159,24 @@ public class PlayState extends gamestates.GameState {
 
     private void evolution() {
         List<Double> lifeTimeList = fitnessFunction();
-
         ships = new ArrayList<>();
         bullets = new ArrayList<>();
+        int[] childOfWho = new int[Settings.NUMBER_OF_SHIPS];
+
         for (int i = 0; i < Settings.NUMBER_OF_SHIPS; i++) {
             double f = Math.random();
             int j = 0;
             while (f > lifeTimeList.get(j))
                 j++;
+            childOfWho[j] += 1;
             Ship oldShip = storedShips.get(j);
             createMutation(oldShip);
         }
 
-        if (Settings.DEBUG)
-            print();
+        if (Settings.DEBUG) {
+            printMostChild(childOfWho);
+            printPopulation();
+        }
 
         storedShips = new ArrayList<>();
     }
@@ -183,13 +187,14 @@ public class PlayState extends gamestates.GameState {
             s.update(dt);
         }
 
-        if (Settings.DEBUG && ships.size() == 1 && ships.get(0).shouldRemove())
-            printBestShip();
 
         storeAndCleanShips();
 
-        if (ships.isEmpty())
+        if (ships.isEmpty()) {
+            if (Settings.DEBUG)
+                printBestShip();
             evolution();
+        }
     }
 
     /**
@@ -278,7 +283,7 @@ public class PlayState extends gamestates.GameState {
                 Asteroid a = asteroids.get(j);
                 if (a.intersects(s)) {
                     ships.remove(i);
-                    //bullets.remove(i);
+                    bullets.remove(i);
                     i--;
                     asteroids.remove(j);
                     splitAsteroid(a);
@@ -306,7 +311,6 @@ public class PlayState extends gamestates.GameState {
 
     /**
      * Check if any Ship collided with a Bullet.
-     * TODO: Se eliminar as bullets depois tenho que as voltar a por na evolution.
      */
     private void checkShipsBulletsCollisions() {
         for (int i = 0; i < ships.size(); i++) {
@@ -357,14 +361,37 @@ public class PlayState extends gamestates.GameState {
     }
 
     private void printBestShip() {
-        System.out.println("Generation " + GENERATION_COUNTER + " Best Ship:\n" + ships.get(0));
+        System.out.println("\tBest Ships:");
+        if (numShips >= 1)
+            System.out.println("\t\t1st: " + storedShips.get(storedShips.size() - 1) + "; ");
+        if (numShips >= 2)
+            System.out.println("\t\t2nd: " + storedShips.get(storedShips.size() - 2) + "; ");
+        if (numShips >= 3)
+            System.out.println("\t\t3rd: " + storedShips.get(storedShips.size() - 3) + "; ");
+        System.out.println();
     }
 
-    private void print() {
+    private void printMostChild(int[] numberOfChildren) {
+        System.out.println("\tChildren:");
+        System.out.print("\t\t");
+        boolean found = false;
+        for (int i = 0; i < numberOfChildren.length; i++)
+            if (numberOfChildren[i] > 2) {
+                found = true;
+                System.out.print("[" + i + ": " + numberOfChildren[i] + "]; ");
+            }
+        if (!found)
+            System.out.print("All have less than 2 children.");
+        System.out.println();
+    }
+
+    private void printPopulation() {
         System.out.println("Generation " + GENERATION_COUNTER++ + ":");
+        System.out.println("\tPopulation:");
+        System.out.print("\t\t");
         for (Ship ship : ships)
-            System.out.print(ship);
-        System.out.print("\n\n");
+            System.out.print(ship + " ");
+        System.out.println();
     }
 
     private void drawShips() {
