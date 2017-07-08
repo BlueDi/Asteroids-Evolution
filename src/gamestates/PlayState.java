@@ -75,13 +75,16 @@ public class PlayState extends gamestates.GameState {
             spawnSingleShip();
     }
 
-    private void storeAndCleanShips() {
+    private void removeShip(int i) {
+        storedShips.add(new Ship(ships.get(i)));
+        ships.remove(i);
+        bullets.remove(i);
+    }
+
+    private void cleanShips() {
         for (int i = 0; i < ships.size(); i++) {
-            Ship s = ships.get(i);
-            if (s.shouldRemove()) {
-                storedShips.add(new Ship(s, s.getDistanceToDodge(), s.getRotationSpeed()));
-                ships.remove(i);
-                bullets.remove(i);
+            if (ships.get(i).shouldRemove()) {
+                removeShip(i);
                 i--;
             }
         }
@@ -147,11 +150,16 @@ public class PlayState extends gamestates.GameState {
             mutantShip.setDeceleration(deceleration);
     }
 
+    /**
+     * Fitness function: Ship.lifeTimer^FIT_EXPONENTIAL.
+     *
+     * @return List with acumulatives percentages of the Ships
+     */
     private List<Double> fitnessFunction() {
         List<Double> lifeTimeList = new ArrayList<>();
         double sumLifes = 0;
         for (Ship s : storedShips) {
-            double fitness = Math.pow(s.getLifeTime(), 4);
+            double fitness = Math.pow(s.getLifeTime(), Settings.FIT_EXPONENTIAL);
             lifeTimeList.add(fitness);
             sumLifes += fitness;
         }
@@ -164,8 +172,11 @@ public class PlayState extends gamestates.GameState {
         return lifeTimeList;
     }
 
+    /**
+     * The Elite Ships, the best from the previous generation, get to clone themselves into the new generation.
+     */
     private void elitism() {
-        for (int i = (storedShips.size() - 1); i >= (storedShips.size() - ELITISM - 1); i--) {
+        for (int i = (storedShips.size() - 1); i >= (storedShips.size() - ELITISM); i--) {
             bullets.add(new ArrayList<>());
             ships.add(new Ship(storedShips.get(i)));
         }
@@ -180,13 +191,13 @@ public class PlayState extends gamestates.GameState {
 
         List<Double> lifeTimeList = fitnessFunction();
         for (int i = 0; i < (numShips - ELITISM); i++) {
-            double f = Math.random();
+            double whoWillReproduce = Math.random();
             int j = 0;
-            while (f > lifeTimeList.get(j))
+            while (whoWillReproduce > lifeTimeList.get(j))
                 j++;
-            childOfWho[j] += 1;
-            Ship oldShip = storedShips.get(j);
-            createMutation(oldShip);
+            childOfWho[j]++;
+            Ship shipToReproduce = storedShips.get(j);
+            createMutation(shipToReproduce);
         }
 
         if (Settings.DEBUG) {
@@ -206,7 +217,7 @@ public class PlayState extends gamestates.GameState {
         }
 
 
-        storeAndCleanShips();
+        cleanShips();
 
         if (ships.isEmpty()) {
             if (Settings.DEBUG)
@@ -296,8 +307,7 @@ public class PlayState extends gamestates.GameState {
             for (int j = 0; j < asteroids.size(); j++) {
                 Asteroid a = asteroids.get(j);
                 if (a.intersects(s)) {
-                    ships.remove(i);
-                    bullets.remove(i);
+                    removeShip(i);
                     i--;
                     asteroids.remove(j);
                     splitAsteroid(a);
@@ -336,8 +346,7 @@ public class PlayState extends gamestates.GameState {
                         Bullet b = enemy_bullets.get(k);
                         if (s.contains(b.getX(), b.getY())) {
                             enemy_bullets.remove(b);
-                            ships.remove(i);
-                            bullets.remove(i);
+                            removeShip(i);
                             i--;
                             j--;
                             break;
