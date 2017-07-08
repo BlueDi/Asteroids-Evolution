@@ -56,8 +56,10 @@ public class PlayState extends gamestates.GameState {
 
         spawnShips();
 
-        if (Settings.DEBUG)
+        if (Settings.DEBUG) {
+            printGenerationHeader();
             printPopulation();
+        }
 
         numAsteroids = Settings.NUMBER_OF_ASTEROIDS;
         numFood = Settings.NUMBER_OF_FOOD;
@@ -189,6 +191,8 @@ public class PlayState extends gamestates.GameState {
 
         if (Settings.DEBUG) {
             printMostChild(childOfWho);
+            System.out.println();
+            printGenerationHeader();
             printPopulation();
         }
 
@@ -206,7 +210,7 @@ public class PlayState extends gamestates.GameState {
 
         if (ships.isEmpty()) {
             if (Settings.DEBUG)
-                printBestShip();
+                printBestShips();
             evolution();
         }
     }
@@ -370,15 +374,21 @@ public class PlayState extends gamestates.GameState {
         checkBulletsAsteroidsCollisions();
     }
 
-    private void printBestShip() {
-        System.out.println("\tBest Ships:");
-        if (numShips >= 1)
-            System.out.println("\t\t1st: " + storedShips.get(storedShips.size() - 1) + "; ");
-        if (numShips >= 2)
-            System.out.println("\t\t2nd: " + storedShips.get(storedShips.size() - 2) + "; ");
-        if (numShips >= 3)
-            System.out.println("\t\t3rd: " + storedShips.get(storedShips.size() - 3) + "; ");
-        System.out.println();
+    private void printBestShips() {
+        int i = 0;
+        if (ELITISM <= 0) {
+            System.out.println("\tBest Ships:");
+            while (i < 3 && i < numShips) {
+                i++;
+                System.out.println("\t\t" + i + ": " + storedShips.get(storedShips.size() - i) + "; ");
+            }
+        } else {
+            System.out.println("\tElite Ships:");
+            while (i < ELITISM) {
+                i++;
+                System.out.println("\t\t" + i + ": " + storedShips.get(storedShips.size() - i) + "; ");
+            }
+        }
     }
 
     private void printMostChild(int[] numberOfChildren) {
@@ -396,12 +406,15 @@ public class PlayState extends gamestates.GameState {
     }
 
     private void printPopulation() {
-        System.out.println("Generation " + GENERATION_COUNTER++ + ":");
         System.out.println("\tPopulation:");
         System.out.print("\t\t");
         for (Ship ship : ships)
             System.out.print(ship + " ");
         System.out.println();
+    }
+
+    private void printGenerationHeader() {
+        System.out.println("Generation " + GENERATION_COUNTER++ + ":");
     }
 
     private void drawShips() {
