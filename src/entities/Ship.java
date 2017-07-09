@@ -28,9 +28,7 @@ public class Ship extends SpaceObject {
     private float deceleration;
     private float acceleratingTimer;
 
-    private double distance_to_dodge;
-    private double min_distance_to_food;
-    private double min_distance_to_asteroid;
+    private double distanceToDodge;
 
     private float PI = (float) Math.PI;
 
@@ -55,7 +53,7 @@ public class Ship extends SpaceObject {
         acceleration = MathUtils.random(10, Settings.SHIP_MAX_ACCELERATION) * Settings.TIME_MULTIPLIER;
         deceleration = MathUtils.random(10, Settings.SHIP_MAX_DECELERATION) * Settings.TIME_MULTIPLIER;
         rotationSpeed = MathUtils.random(2, Settings.SHIP_ROTATION);
-        distance_to_dodge = MathUtils.random(1, Settings.SHIP_DISTANCE_DODGE);
+        distanceToDodge = MathUtils.random(1, Settings.SHIP_DISTANCE_DODGE);
     }
 
     /**
@@ -69,7 +67,7 @@ public class Ship extends SpaceObject {
         this.acceleration = s.getAcceleration();
         this.deceleration = s.getDeceleration();
         this.rotationSpeed = s.rotationSpeed;
-        this.distance_to_dodge = s.getDistanceToDodge();
+        this.distanceToDodge = s.getDistanceToDodge();
     }
 
     public float getMaxSpeed() {
@@ -146,11 +144,11 @@ public class Ship extends SpaceObject {
 
 
     public double getDistanceToDodge() {
-        return distance_to_dodge;
+        return distanceToDodge;
     }
 
     public void setDistanceToDodge(double distance_to_dodge) {
-        this.distance_to_dodge = distance_to_dodge;
+        this.distanceToDodge = distance_to_dodge;
     }
 
     /**
@@ -202,12 +200,12 @@ public class Ship extends SpaceObject {
      * @param food Food to search
      */
     private void closestFood(List<Food> food) {
-        min_distance_to_food = 9999;
+        double minDistanceToFood = 9999;
         Food closestFood = null;
         for (Food f : food) {
             double distance = Math.sqrt(Math.pow(f.getX() - x, 2) + Math.pow(f.getY() - y, 2));
-            if (distance < min_distance_to_food) {
-                min_distance_to_food = distance;
+            if (distance < minDistanceToFood) {
+                minDistanceToFood = distance;
                 closestFood = f;
             }
         }
@@ -226,17 +224,17 @@ public class Ship extends SpaceObject {
      * @param asteroids Asteroids to search
      */
     private void closestAsteroid(List<Asteroid> asteroids) {
-        min_distance_to_asteroid = 9999;
+        double minDistanceToAsteroid = 9999;
         Asteroid closestAsteroid = null;
         for (Asteroid a : asteroids) {
             double distance = Math.sqrt(Math.pow(a.getX() - x, 2) + Math.pow(a.getY() - y, 2));
-            if (distance < min_distance_to_asteroid) {
-                min_distance_to_asteroid = distance;
+            if (distance < minDistanceToAsteroid) {
+                minDistanceToAsteroid = distance;
                 closestAsteroid = a;
             }
         }
 
-        if (min_distance_to_asteroid < distance_to_dodge) {
+        if (minDistanceToAsteroid < distanceToDodge) {
             float dodge_desired = 0f;
             if (closestAsteroid != null)
                 dodge_desired = calculateDesiredOrientation(closestAsteroid.getX(), closestAsteroid.getY());
@@ -339,11 +337,12 @@ public class Ship extends SpaceObject {
 
     /**
      * Representation of the ship has a String.
+     * <p>[maxSpeed; acceleration; deceleration; distanceToDodge; rotationSpeed; lifeTime]
      *
      * @return String with Ship stats
      */
     public String toString() {
-        return "[" + String.format("%3.0f", maxSpeed) + "; " + String.format("%3.0f", acceleration) + "; " + String.format("%3.0f", deceleration) + "; " + String.format("%2.0f", distance_to_dodge) + "; " + String.format("%.2f", rotationSpeed) + "]";
+        return "[" + String.format("%3.0f", maxSpeed) + "; " + String.format("%3.0f", acceleration) + "; " + String.format("%3.0f", deceleration) + "; " + String.format("%2.0f", distanceToDodge) + "; " + String.format("%.2f", rotationSpeed) + "; " + String.format("%3.0f", lifeTime) + "]";
     }
 
     /**
@@ -355,7 +354,7 @@ public class Ship extends SpaceObject {
         if (Settings.DEBUG) {
             sr.begin(ShapeType.Circle);
             sr.setColor(1, 0.5f, 0.5f, 1);
-            sr.circle(x, y, (float) distance_to_dodge);
+            sr.circle(x, y, (float) distanceToDodge);
             sr.end();
         }
 

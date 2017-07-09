@@ -20,5 +20,4 @@ public abstract class GameState {
     public abstract void handleInput();
 
     public abstract void dispose();
-
 }
