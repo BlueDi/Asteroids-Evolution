@@ -1,4 +1,4 @@
-package gamestates;
+package managers;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -8,14 +8,11 @@ import com.badlogic.gdx.math.MathUtils;
 import entities.Asteroid;
 import entities.Food;
 import entities.Ship;
-import managers.Game;
-import managers.GameStateManager;
-import managers.Settings;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class PlayState extends gamestates.GameState {
+class PlayState {
     private ShapeRenderer sr;
 
     private List<Ship> ships;
@@ -34,8 +31,8 @@ public class PlayState extends gamestates.GameState {
     private float bestShipLifeTime;
     private String currentBestShipStats;
 
-    public PlayState(GameStateManager gsm) {
-        super(gsm);
+    PlayState() {
+        init();
     }
 
     private void setElitism(int elitism) {
@@ -47,7 +44,7 @@ public class PlayState extends gamestates.GameState {
             ELITISM = elitism;
     }
 
-    public void init() {
+    private void init() {
         sr = new ShapeRenderer();
 
         ships = new ArrayList<>();
@@ -256,7 +253,7 @@ public class PlayState extends gamestates.GameState {
             spawnSingleFood();
     }
 
-    public void update(float dt) {
+    void update(float dt) {
         handleInput();
 
         updateShips(dt);
@@ -319,6 +316,9 @@ public class PlayState extends gamestates.GameState {
             }
     }
 
+    /**
+     * Checks all the Ships for collisions with Food or Asteroids.
+     */
     private void checkCollisions() {
         checkShipsFoodCollisions();
         checkShipsAsteroidsCollisions();
@@ -397,14 +397,17 @@ public class PlayState extends gamestates.GameState {
 
         spriteBatch.begin();
         font.setColor(1, 1, 1, 1);
-        font.draw(spriteBatch,  "Current Best Ship: ", 25, 25 + font.getLineHeight());
-        font.draw(spriteBatch,  currentBestShipStats, 150, 25 + font.getLineHeight());
+        font.draw(spriteBatch, "Current Best Ship: ", 25, 25 + font.getLineHeight());
+        font.draw(spriteBatch, currentBestShipStats, 150, 25 + font.getLineHeight());
         font.draw(spriteBatch, "Best Ship Ever: ", 25, 25);
         font.draw(spriteBatch, bestShipEverStats, 150, 25);
         spriteBatch.end();
     }
 
-    public void draw() {
+    /**
+     * Draws everything to the screen.
+     */
+    void draw() {
         drawShips();
         drawAsteroids();
         drawFood();
@@ -414,15 +417,12 @@ public class PlayState extends gamestates.GameState {
     /**
      * On click creates an Asteroid at mouse position.
      */
-    public void handleInput() {
+    private void handleInput() {
         if (Gdx.input.justTouched()) {
             spawnSingleAsteroid();
             Asteroid a = asteroids.get(asteroids.size() - 1);
             a.setX(Gdx.input.getX());
             a.setY(Gdx.input.getY() * -1 + Game.HEIGHT);
         }
-    }
-
-    public void dispose() {
     }
 }

@@ -4,16 +4,16 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 
 public final class Settings {
     public static boolean DEBUG = true;
-    public static int WINDOW_WIDTH = 1600;
-    public static int WINDOW_HEIGHT = 800;
+    static int WINDOW_WIDTH = 1600;
+    static int WINDOW_HEIGHT = 800;
     public static int TIME_MULTIPLIER = 1;
-    public static int NUMBER_OF_SHIPS = 100;
-    public static int NUMBER_OF_ASTEROIDS = 10;
-    public static int NUMBER_OF_FOOD = 30;
-    public static int MUTATION_PROBABILITY = 50;
-    public static float MUTATION_VARIATION = 0.05f;
-    public static int FIT_EXPONENTIAL = 5;
-    public static int ELITISM = 3;
+    static int NUMBER_OF_SHIPS = 100;
+    static int NUMBER_OF_ASTEROIDS = 10;
+    static int NUMBER_OF_FOOD = 30;
+    static int MUTATION_PROBABILITY = 50;
+    static float MUTATION_VARIATION = 0.05f;
+    static int FIT_EXPONENTIAL = 5;
+    static int ELITISM = 3;
 
     //Ship
     public static int SHIP_LIFETIME = 5;

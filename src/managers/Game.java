@@ -3,14 +3,14 @@ package managers;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.graphics.GL10;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 
 public class Game implements ApplicationListener {
     public static int WIDTH;
     public static int HEIGHT;
 
-    private GameStateManager gsm;
+    private PlayState ps;
 
     public void create() {
         WIDTH = Gdx.graphics.getWidth();
@@ -22,16 +22,16 @@ public class Game implements ApplicationListener {
 
         Gdx.input.setInputProcessor(new InputAdapter());
 
-        gsm = new GameStateManager();
+        ps = new PlayState();
     }
 
     public void render() {
         // clear screen to black
         Gdx.gl.glClearColor(0, 0, 0, 1);
-        Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        gsm.update(Gdx.graphics.getDeltaTime() * Settings.TIME_MULTIPLIER);
-        gsm.draw();
+        ps.update(Gdx.graphics.getDeltaTime() * Settings.TIME_MULTIPLIER);
+        ps.draw();
     }
 
     public void resize(int width, int height) {
