@@ -10,8 +10,8 @@ public final class Settings {
     static int NUMBER_OF_SHIPS = 100;
     static int NUMBER_OF_ASTEROIDS = 10;
     static int NUMBER_OF_FOOD = 30;
-    static int MUTATION_PROBABILITY = 50;
-    static float MUTATION_VARIATION = 0.05f;
+    public static int MUTATION_PROBABILITY = 50;
+    public static float MUTATION_VARIATION = 0.05f;
     static int FIT_EXPONENTIAL = 5;
     static int ELITISM = 3;
 

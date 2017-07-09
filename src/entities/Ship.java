@@ -29,6 +29,10 @@ public class Ship extends SpaceObject {
 
     private float PI = (float) Math.PI;
 
+    private int min_mutation_probability;
+    private int med_mutation_probability;
+    private float mutation_variation;
+
     /**
      * Creates a new Ship with random stats.
      */
@@ -48,6 +52,10 @@ public class Ship extends SpaceObject {
         deceleration = MathUtils.random(10, Settings.SHIP_MAX_DECELERATION) * Settings.TIME_MULTIPLIER;
         rotationSpeed = MathUtils.random(2, Settings.SHIP_ROTATION);
         distanceToDodge = MathUtils.random(1, Settings.SHIP_DISTANCE_DODGE);
+
+        min_mutation_probability = Settings.MUTATION_PROBABILITY;
+        med_mutation_probability = Settings.MUTATION_PROBABILITY + (100 - Settings.MUTATION_PROBABILITY / 2);
+        mutation_variation = Settings.MUTATION_VARIATION;
     }
 
     /**
@@ -60,32 +68,24 @@ public class Ship extends SpaceObject {
         this.maxSpeed = s.getMaxSpeed();
         this.acceleration = s.getAcceleration();
         this.deceleration = s.getDeceleration();
-        this.rotationSpeed = s.rotationSpeed;
+        this.rotationSpeed = s.getRotationSpeed();
         this.distanceToDodge = s.getDistanceToDodge();
     }
 
-    public float getMaxSpeed() {
+    private float getMaxSpeed() {
         return maxSpeed;
     }
 
-    public void setMaxSpeed(float maxSpeed) {
-        this.maxSpeed = maxSpeed;
-    }
-
-    public float getAcceleration() {
+    private float getAcceleration() {
         return acceleration;
     }
 
-    public void setAcceleration(float acceleration) {
-        this.acceleration = acceleration;
-    }
-
-    public float getDeceleration() {
+    private float getDeceleration() {
         return deceleration;
     }
 
-    public void setDeceleration(float deceleration) {
-        this.deceleration = deceleration;
+    private double getDistanceToDodge() {
+        return distanceToDodge;
     }
 
     private void setShape() {
@@ -130,15 +130,6 @@ public class Ship extends SpaceObject {
 
     public void setUp(boolean b) {
         up = b;
-    }
-
-
-    public double getDistanceToDodge() {
-        return distanceToDodge;
-    }
-
-    public void setDistanceToDodge(double distance_to_dodge) {
-        this.distanceToDodge = distance_to_dodge;
     }
 
     /**
@@ -242,6 +233,60 @@ public class Ship extends SpaceObject {
         closestAsteroid(asteroids);
     }
 
+    private void mutateDistanceToDodge(double probabilityToMutate) {
+        if (probabilityToMutate > min_mutation_probability && probabilityToMutate < med_mutation_probability) {
+            distanceToDodge += distanceToDodge * mutation_variation;
+        } else if (probabilityToMutate >= med_mutation_probability) {
+            distanceToDodge -= distanceToDodge * mutation_variation;
+        }
+        if (distanceToDodge < 1)
+            distanceToDodge = 1;
+    }
+
+
+    private void mutateRotationSpeed(double probabilityToMutate) {
+        if (probabilityToMutate > min_mutation_probability && probabilityToMutate < med_mutation_probability) {
+            rotationSpeed += rotationSpeed * mutation_variation;
+        } else if (probabilityToMutate >= med_mutation_probability) {
+            rotationSpeed -= rotationSpeed * mutation_variation;
+        }
+    }
+
+    private void mutateMaxSpeed(double probabilityToMutate) {
+        if (probabilityToMutate > min_mutation_probability && probabilityToMutate < med_mutation_probability) {
+            maxSpeed += maxSpeed * mutation_variation;
+        } else if (probabilityToMutate >= med_mutation_probability) {
+            maxSpeed -= maxSpeed * mutation_variation;
+        }
+    }
+
+    private void mutateAcceleration(double probabilityToMutate) {
+        if (probabilityToMutate > min_mutation_probability && probabilityToMutate < med_mutation_probability) {
+            acceleration += acceleration * mutation_variation;
+        } else if (probabilityToMutate >= med_mutation_probability) {
+            acceleration -= acceleration * mutation_variation;
+        }
+    }
+
+    private void mutateDeceleration(double probabilityToMutate) {
+        if (probabilityToMutate > min_mutation_probability && probabilityToMutate < med_mutation_probability) {
+            deceleration += deceleration * mutation_variation;
+        } else if (probabilityToMutate >= med_mutation_probability) {
+            deceleration -= deceleration * mutation_variation;
+        }
+    }
+
+    /**
+     * Mutates the ship.
+     */
+    public void mutate() {
+        mutateDistanceToDodge(MathUtils.random(0, 100));
+        mutateRotationSpeed(MathUtils.random(0, 100));
+        mutateMaxSpeed(MathUtils.random(0, 100));
+        mutateAcceleration(MathUtils.random(0, 100));
+        mutateDeceleration(MathUtils.random(0, 100));
+    }
+
     /**
      * Rotates the Ship into the desired orientation.
      * The Ship rotation isn't instantaneous, so it must receive the time elapsed.
@@ -341,8 +386,8 @@ public class Ship extends SpaceObject {
         }
 
         float blender = lifeTimer / lifeTime;
-        sr.setColor(blender, 1 - blender, 0, 1);
         sr.begin(ShapeType.Line);
+        sr.setColor(blender, 1 - blender, 0, 1);
         for (int i = 0, j = shapex.length - 1; i < shapex.length; j = i++)
             sr.line(shapex[i], shapey[i], shapex[j], shapey[j]);
         if (up)

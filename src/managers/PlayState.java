@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.MathUtils;
 import entities.Asteroid;
 import entities.Food;
 import entities.Ship;
@@ -81,8 +80,10 @@ class PlayState {
         ships.remove(i);
     }
 
-    private void cloneShip(Ship s) {
-        ships.add(new Ship(s));
+    private Ship cloneShip(Ship s) {
+        Ship clone = new Ship(s);
+        ships.add(clone);
+        return clone;
     }
 
     private void cleanShips() {
@@ -100,53 +101,8 @@ class PlayState {
      * @param oldShip Mutant will be based on this ship
      */
     private void createMutation(Ship oldShip) {
-        cloneShip(oldShip);
-        double m = MathUtils.random(0, 100);
-        int min_mutation_probability = Settings.MUTATION_PROBABILITY;
-        int med_mutation_probability = Settings.MUTATION_PROBABILITY + (100 - Settings.MUTATION_PROBABILITY / 2);
-        float mutation_variation = Settings.MUTATION_VARIATION;
-        double distance_to_dodge = oldShip.getDistanceToDodge();
-        float rotation_speed = oldShip.getRotationSpeed();
-        float max_speed = oldShip.getMaxSpeed();
-        float acceleration = oldShip.getAcceleration();
-        float deceleration = oldShip.getDeceleration();
-        Ship mutantShip = ships.get(ships.size() - 1);
-
-        if (m > min_mutation_probability && m < med_mutation_probability) {
-            mutantShip.setDistanceToDodge(distance_to_dodge + distance_to_dodge * mutation_variation);
-        } else if (m >= med_mutation_probability) {
-            mutantShip.setDistanceToDodge(distance_to_dodge - distance_to_dodge * mutation_variation);
-        }
-        if (mutantShip.getDistanceToDodge() < 1)
-            mutantShip.setDistanceToDodge(1);
-
-        m = MathUtils.random(0, 100);
-        if (m > min_mutation_probability && m < med_mutation_probability) {
-            mutantShip.setRotationSpeed(rotation_speed + rotation_speed * mutation_variation);
-        } else if (m >= med_mutation_probability) {
-            mutantShip.setRotationSpeed(rotation_speed - rotation_speed * mutation_variation);
-        }
-
-        m = MathUtils.random(0, 100);
-        if (m > min_mutation_probability && m < med_mutation_probability) {
-            mutantShip.setMaxSpeed(max_speed + max_speed * mutation_variation);
-        } else if (m >= med_mutation_probability) {
-            mutantShip.setMaxSpeed(max_speed - max_speed * mutation_variation);
-        }
-
-        m = MathUtils.random(0, 100);
-        if (m > min_mutation_probability && m < med_mutation_probability) {
-            mutantShip.setAcceleration(acceleration + acceleration * mutation_variation);
-        } else if (m >= med_mutation_probability) {
-            mutantShip.setAcceleration(acceleration - acceleration * mutation_variation);
-        }
-
-        m = MathUtils.random(0, 100);
-        if (m > min_mutation_probability && m < med_mutation_probability) {
-            mutantShip.setDeceleration(deceleration + deceleration * mutation_variation);
-        } else if (m >= med_mutation_probability) {
-            mutantShip.setDeceleration(deceleration - deceleration * mutation_variation);
-        }
+        Ship clone = cloneShip(oldShip);
+        clone.mutate();
     }
 
     /**

@@ -61,12 +61,8 @@ abstract class SpaceObject {
         y = (float) Math.random() * Game.HEIGHT / 2 + Game.HEIGHT / 4;
     }
 
-    public float getRotationSpeed() {
+    float getRotationSpeed() {
         return this.rotationSpeed;
-    }
-
-    public void setRotationSpeed(float rotationSpeed) {
-        this.rotationSpeed = rotationSpeed;
     }
 
     public float getLifeTime() {
