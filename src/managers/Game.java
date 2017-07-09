@@ -2,6 +2,7 @@ package managers;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 
@@ -9,19 +10,17 @@ public class Game implements ApplicationListener {
     public static int WIDTH;
     public static int HEIGHT;
 
-    private static OrthographicCamera cam;
-
     private GameStateManager gsm;
 
     public void create() {
         WIDTH = Gdx.graphics.getWidth();
         HEIGHT = Gdx.graphics.getHeight();
 
-        cam = new OrthographicCamera(WIDTH, HEIGHT);
+        OrthographicCamera cam = new OrthographicCamera(WIDTH, HEIGHT);
         cam.translate(WIDTH / 2, HEIGHT / 2);
         cam.update();
 
-        Gdx.input.setInputProcessor(new GameInputProcessor());
+        Gdx.input.setInputProcessor(new InputAdapter());
 
         gsm = new GameStateManager();
     }
@@ -33,8 +32,6 @@ public class Game implements ApplicationListener {
 
         gsm.update(Gdx.graphics.getDeltaTime() * Settings.TIME_MULTIPLIER);
         gsm.draw();
-
-        GameKeys.update();
     }
 
     public void resize(int width, int height) {

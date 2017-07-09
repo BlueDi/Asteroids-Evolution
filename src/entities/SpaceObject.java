@@ -37,6 +37,14 @@ abstract class SpaceObject {
         return y;
     }
 
+    public void setX(float x) {
+        this.x = x;
+    }
+
+    public void setY(float y) {
+        this.y = y;
+    }
+
     /**
      * Places the SpaceObject in a position from 25% to 75% of the screen.
      */

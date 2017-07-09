@@ -1,11 +1,13 @@
 package gamestates;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import entities.Asteroid;
 import entities.Bullet;
 import entities.Food;
 import entities.Ship;
+import managers.Game;
 import managers.GameStateManager;
 import managers.Settings;
 
@@ -216,7 +218,6 @@ public class PlayState extends gamestates.GameState {
             s.update(dt);
         }
 
-
         cleanShips();
 
         if (ships.isEmpty()) {
@@ -258,7 +259,6 @@ public class PlayState extends gamestates.GameState {
     }
 
     public void update(float dt) {
-        // get user input
         handleInput();
 
         updateShips(dt);
@@ -454,15 +454,16 @@ public class PlayState extends gamestates.GameState {
         drawFood();
     }
 
+    /**
+     * On click creates an Asteroid at mouse position.
+     */
     public void handleInput() {
-        /*
-        ships.get(0).setLeft(GameKeys.isDown(GameKeys.LEFT));
-        ships.get(0).setRight(GameKeys.isDown(GameKeys.RIGHT));
-        ships.get(0).setUp(GameKeys.isDown(GameKeys.UP));
-        if (GameKeys.isPressed(GameKeys.SPACE)) {
-            ships.get(0).shoot();
+        if (Gdx.input.justTouched()) {
+            spawnSingleAsteroid();
+            Asteroid a = asteroids.get(asteroids.size() - 1);
+            a.setX(Gdx.input.getX());
+            a.setY(Gdx.input.getY() * -1 + Game.HEIGHT);
         }
-        */
     }
 
     public void dispose() {
