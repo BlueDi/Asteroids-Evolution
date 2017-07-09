@@ -1,6 +1,8 @@
 package gamestates;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import entities.Asteroid;
@@ -29,6 +31,10 @@ public class PlayState extends gamestates.GameState {
 
     private int GENERATION_COUNTER;
     private int ELITISM;
+
+    private String bestShipEverStats;
+    private float bestShipLifeTime;
+    private String currentBestShipStats;
 
     public PlayState(GameStateManager gsm) {
         super(gsm);
@@ -387,13 +393,13 @@ public class PlayState extends gamestates.GameState {
         int i = 0;
         if (ELITISM <= 0) {
             System.out.println("\tBest Ships:");
-            while (i < 3 && i < numShips) {
+            while (!storedShips.isEmpty() && i < 3 && i < numShips) {
                 i++;
                 System.out.println("\t\t" + i + ": " + storedShips.get(storedShips.size() - i) + "; ");
             }
         } else {
             System.out.println("\tElite Ships:");
-            while (i < ELITISM) {
+            while (!storedShips.isEmpty() && i < ELITISM) {
                 i++;
                 System.out.println("\t\t" + i + ": " + storedShips.get(storedShips.size() - i) + "; ");
             }
@@ -447,11 +453,34 @@ public class PlayState extends gamestates.GameState {
             f.draw(sr);
     }
 
+    private void drawStats() {
+        SpriteBatch spriteBatch = new SpriteBatch();
+        BitmapFont font = new BitmapFont();
+
+        if (!ships.isEmpty()) {
+            Ship currentBestShip = ships.get(ships.size() - 1);
+            currentBestShipStats = currentBestShip.toString();
+            if (currentBestShip.getLifeTime() > bestShipLifeTime) {
+                bestShipLifeTime = currentBestShip.getLifeTime();
+                bestShipEverStats = currentBestShip.toString();
+            }
+        }
+
+        spriteBatch.begin();
+        font.setColor(1, 1, 1, 1);
+        font.draw(spriteBatch,  "Current Best Ship: ", 25, 25 + font.getLineHeight());
+        font.draw(spriteBatch,  currentBestShipStats, 150, 25 + font.getLineHeight());
+        font.draw(spriteBatch, "Best Ship Ever: ", 25, 25);
+        font.draw(spriteBatch, bestShipEverStats, 150, 25);
+        spriteBatch.end();
+    }
+
     public void draw() {
         drawShips();
         drawBullets();
         drawAsteroids();
         drawFood();
+        drawStats();
     }
 
     /**

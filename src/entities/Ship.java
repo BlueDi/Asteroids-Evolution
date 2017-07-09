@@ -342,7 +342,7 @@ public class Ship extends SpaceObject {
      * @return String with Ship stats
      */
     public String toString() {
-        return "[" + String.format("%3.0f", maxSpeed) + "; " + String.format("%3.0f", acceleration) + "; " + String.format("%3.0f", deceleration) + "; " + String.format("%2.0f", distanceToDodge) + "; " + String.format("%.2f", rotationSpeed) + "; " + String.format("%3.0f", lifeTime) + "]";
+        return "[" + String.format("%4.0f", maxSpeed) + "; " + String.format("%4.0f", acceleration) + "; " + String.format("%4.0f", deceleration) + "; " + String.format("%3.0f", distanceToDodge) + "; " + String.format("%.2f", rotationSpeed) + "; " + String.format("%3.0f", lifeTime) + "]";
     }
 
     /**
