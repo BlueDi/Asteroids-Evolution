@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import entities.Asteroid;
-import entities.Bullet;
 import entities.Food;
 import entities.Ship;
 import managers.Game;
@@ -21,7 +20,6 @@ public class PlayState extends gamestates.GameState {
 
     private List<Ship> ships;
     private List<Ship> storedShips;
-    private List<List<Bullet>> bullets;
     private List<Asteroid> asteroids;
     private List<Food> food;
 
@@ -54,7 +52,6 @@ public class PlayState extends gamestates.GameState {
 
         ships = new ArrayList<>();
         storedShips = new ArrayList<>();
-        bullets = new ArrayList<>();
         asteroids = new ArrayList<>();
         food = new ArrayList<>();
 
@@ -74,8 +71,7 @@ public class PlayState extends gamestates.GameState {
     }
 
     private void spawnSingleShip() {
-        bullets.add(new ArrayList<>());
-        ships.add(new Ship(bullets.get(bullets.size() - 1)));
+        ships.add(new Ship());
     }
 
     private void spawnShips() {
@@ -86,11 +82,9 @@ public class PlayState extends gamestates.GameState {
     private void removeShip(int i) {
         storedShips.add(new Ship(ships.get(i)));
         ships.remove(i);
-        bullets.remove(i);
     }
 
     private void cloneShip(Ship s) {
-        bullets.add(new ArrayList<>());
         ships.add(new Ship(s));
     }
 
@@ -185,14 +179,12 @@ public class PlayState extends gamestates.GameState {
      */
     private void elitism() {
         for (int i = (storedShips.size() - 1); i >= (storedShips.size() - ELITISM); i--) {
-            bullets.add(new ArrayList<>());
             ships.add(new Ship(storedShips.get(i)));
         }
     }
 
     private void evolution() {
         ships = new ArrayList<>();
-        bullets = new ArrayList<>();
         int[] childOfWho = new int[numShips];
 
         elitism();
@@ -269,17 +261,6 @@ public class PlayState extends gamestates.GameState {
 
         updateShips(dt);
 
-        // update ship bullets
-        for (List<Bullet> bullets_of_ship : bullets)
-            for (int i = 0; i < bullets_of_ship.size(); i++) {
-                bullets_of_ship.get(i).update(dt);
-                if (bullets_of_ship.get(i).shouldRemove()) {
-                    bullets_of_ship.remove(i);
-                    i--;
-                }
-            }
-
-        // update asteroids
         for (int i = 0; i < asteroids.size(); i++) {
             Asteroid a = asteroids.get(i);
             a.update(dt);
@@ -289,7 +270,6 @@ public class PlayState extends gamestates.GameState {
             }
         }
 
-        // update food
         for (int i = 0; i < food.size(); i++) {
             Food f = food.get(i);
             f.update(dt);
@@ -339,54 +319,9 @@ public class PlayState extends gamestates.GameState {
             }
     }
 
-    /**
-     * Check if any Ship collided with a Bullet.
-     */
-    private void checkShipsBulletsCollisions() {
-        for (int i = 0; i < ships.size(); i++) {
-            Ship s = ships.get(i);
-            for (int j = 0; j < bullets.size(); j++)
-                if (i != j) {
-                    List<Bullet> enemy_bullets = bullets.get(j);
-                    for (int k = 0; k < enemy_bullets.size(); k++) {
-                        Bullet b = enemy_bullets.get(k);
-                        if (s.contains(b.getX(), b.getY())) {
-                            enemy_bullets.remove(b);
-                            removeShip(i);
-                            i--;
-                            j--;
-                            break;
-                        }
-                    }
-                }
-        }
-    }
-
-    /**
-     * Check if any Bullet collided with an Asteroid.
-     */
-    private void checkBulletsAsteroidsCollisions() {
-        for (List<Bullet> bullets_flying : bullets)
-            for (int i = 0; i < bullets_flying.size(); i++) {
-                Bullet b = bullets_flying.get(i);
-                for (int j = 0; j < asteroids.size(); j++) {
-                    Asteroid a = asteroids.get(j);
-                    if (a.contains(b.getX(), b.getY())) {
-                        bullets_flying.remove(b);
-                        i--;
-                        asteroids.remove(a);
-                        splitAsteroid(a);
-                        break;
-                    }
-                }
-            }
-    }
-
     private void checkCollisions() {
-        checkShipsBulletsCollisions();
         checkShipsFoodCollisions();
         checkShipsAsteroidsCollisions();
-        checkBulletsAsteroidsCollisions();
     }
 
     private void printBestShips() {
@@ -437,12 +372,6 @@ public class PlayState extends gamestates.GameState {
             ship.draw(sr);
     }
 
-    private void drawBullets() {
-        for (List<Bullet> bullets_flying : bullets)
-            for (Bullet bullet : bullets_flying)
-                bullet.draw(sr);
-    }
-
     private void drawAsteroids() {
         for (Asteroid asteroid : asteroids)
             asteroid.draw(sr);
@@ -477,7 +406,6 @@ public class PlayState extends gamestates.GameState {
 
     public void draw() {
         drawShips();
-        drawBullets();
         drawAsteroids();
         drawFood();
         drawStats();

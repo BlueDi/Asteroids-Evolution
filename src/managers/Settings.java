@@ -17,7 +17,6 @@ public final class Settings {
 
     //Ship
     public static int SHIP_LIFETIME = 5;
-    public static int SHIP_MAX_BULLETS = 4;
     public static float SHIP_MAX_SPEED = 500;
     public static float SHIP_MAX_ACCELERATION = 500;
     public static float SHIP_MAX_DECELERATION = 250;
@@ -26,11 +25,6 @@ public final class Settings {
     public static double SHIP_SATISFIABLE_ANGLE = (float) Math.PI / 100;
     public static double SHIP_DODGE_ANGLE = (float) Math.PI;
     public static int SHIP_DISTANCE_DODGE = 200;
-
-    //Bullet
-    public static int BULLET_LIFETIME = 1;
-    public static float BULLET_SPEED = 35;
-    public static ShapeType BULLET_SHAPE = ShapeType.Circle;
 
     //Asteroid
     public static int ASTEROID_LIFETIME = 10;

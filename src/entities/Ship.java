@@ -11,9 +11,6 @@ import java.util.List;
  * TODO: talvez por as naves a terem que aprender que asteroides sao maus, e comida é bom
  */
 public class Ship extends SpaceObject {
-    private final int MAX_BULLETS = Settings.SHIP_MAX_BULLETS;
-    private List<Bullet> bullets;
-
     private float[] flamex;
     private float[] flamey;
 
@@ -34,11 +31,8 @@ public class Ship extends SpaceObject {
 
     /**
      * Creates a new Ship with random stats.
-     *
-     * @param bullets Ship's Bullets list
      */
-    public Ship(List<Bullet> bullets) {
-        this.bullets = bullets;
+    public Ship() {
         this.lifeTime = Settings.SHIP_LIFETIME / Settings.TIME_MULTIPLIER;
 
         setRandomLimitedPosition();
@@ -62,7 +56,7 @@ public class Ship extends SpaceObject {
      * @param s Ship to clone
      */
     public Ship(Ship s) {
-        this(s.getBullets());
+        this();
         this.maxSpeed = s.getMaxSpeed();
         this.acceleration = s.getAcceleration();
         this.deceleration = s.getDeceleration();
@@ -92,10 +86,6 @@ public class Ship extends SpaceObject {
 
     public void setDeceleration(float deceleration) {
         this.deceleration = deceleration;
-    }
-
-    private List<Bullet> getBullets() {
-        return this.bullets;
     }
 
     private void setShape() {
@@ -149,14 +139,6 @@ public class Ship extends SpaceObject {
 
     public void setDistanceToDodge(double distance_to_dodge) {
         this.distanceToDodge = distance_to_dodge;
-    }
-
-    /**
-     * Shoots a bullet.
-     */
-    public void shoot() {
-        if (bullets.size() < MAX_BULLETS)
-            bullets.add(new Bullet(x, y, orientation));
     }
 
     /**
