@@ -15,10 +15,6 @@ public final class Settings {
     public static int FIT_EXPONENTIAL = 5;
     public static int ELITISM = 3;
 
-    //PlayState
-    public static int DISTANCE_SHIP_FOOD = 200;
-    public static int DISTANCE_SHIP_ASTEROID = 50;
-
     //Ship
     public static int SHIP_LIFETIME = 5;
     public static int SHIP_MAX_BULLETS = 4;
