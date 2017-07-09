@@ -30,7 +30,18 @@ class PlayState {
     private float bestShipLifeTime;
     private String currentBestShipStats;
 
+    private SpriteBatch spriteBatch;
+    private BitmapFont font;
+
     PlayState() {
+        sr = new ShapeRenderer();
+        ships = new ArrayList<>();
+        storedShips = new ArrayList<>();
+        asteroids = new ArrayList<>();
+        food = new ArrayList<>();
+        spriteBatch = new SpriteBatch();
+        font = new BitmapFont();
+
         init();
     }
 
@@ -44,15 +55,9 @@ class PlayState {
     }
 
     private void init() {
-        sr = new ShapeRenderer();
-
-        ships = new ArrayList<>();
-        storedShips = new ArrayList<>();
-        asteroids = new ArrayList<>();
-        food = new ArrayList<>();
-
         numShips = Settings.NUMBER_OF_SHIPS;
-
+        numAsteroids = Settings.NUMBER_OF_ASTEROIDS;
+        numFood = Settings.NUMBER_OF_FOOD;
         setElitism(Settings.ELITISM);
 
         spawnShips();
@@ -61,9 +66,6 @@ class PlayState {
             printGenerationHeader();
             printPopulation();
         }
-
-        numAsteroids = Settings.NUMBER_OF_ASTEROIDS;
-        numFood = Settings.NUMBER_OF_FOOD;
     }
 
     private void spawnSingleShip() {
@@ -339,9 +341,6 @@ class PlayState {
     }
 
     private void drawStats() {
-        SpriteBatch spriteBatch = new SpriteBatch();
-        BitmapFont font = new BitmapFont();
-
         if (!ships.isEmpty()) {
             Ship currentBestShip = ships.get(ships.size() - 1);
             currentBestShipStats = currentBestShip.toString();
