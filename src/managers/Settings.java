@@ -7,13 +7,13 @@ public final class Settings {
     static int WINDOW_WIDTH = 1600;
     static int WINDOW_HEIGHT = 800;
     public static int TIME_MULTIPLIER = 1;
-    static int NUMBER_OF_SHIPS = 100;
+    static int NUMBER_OF_SHIPS = 1000;
     static int NUMBER_OF_ASTEROIDS = 10;
     static int NUMBER_OF_FOOD = 30;
     public static int MUTATION_PROBABILITY = 50;
     public static float MUTATION_VARIATION = 0.05f;
     static int FIT_EXPONENTIAL = 5;
-    static int ELITISM = 3;
+    static int ELITISM = NUMBER_OF_SHIPS / 10;
 
     //Ship
     public static int SHIP_LIFETIME = 5;
@@ -22,7 +22,7 @@ public final class Settings {
     public static float SHIP_MAX_DECELERATION = 250;
     public static float SHIP_ROTATION = (float) Math.PI;
     public static float SHIP_STARTING_ORIENTATION = (float) Math.PI / 2;
-    public static double SHIP_SATISFIABLE_ANGLE = (float) Math.PI / 100;
+    public static float SHIP_SATISFIABLE_ANGLE = (float) Math.PI / 50;
     public static double SHIP_DODGE_ANGLE = (float) Math.PI;
     public static int SHIP_DISTANCE_DODGE = 200;
 

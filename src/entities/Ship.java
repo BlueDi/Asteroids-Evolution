@@ -19,6 +19,7 @@ public class Ship extends SpaceObject {
     private boolean up;
 
     private float desired = 0f;
+    private float satisfiableAngle;
 
     private float maxSpeed;
     private float acceleration;
@@ -47,6 +48,7 @@ public class Ship extends SpaceObject {
         flamey = new float[3];
 
         orientation = Settings.SHIP_STARTING_ORIENTATION;
+        satisfiableAngle = Settings.SHIP_SATISFIABLE_ANGLE;
         maxSpeed = MathUtils.random(10, Settings.SHIP_MAX_SPEED) * Settings.TIME_MULTIPLIER;
         acceleration = MathUtils.random(10, Settings.SHIP_MAX_ACCELERATION) * Settings.TIME_MULTIPLIER;
         deceleration = MathUtils.random(10, Settings.SHIP_MAX_DECELERATION) * Settings.TIME_MULTIPLIER;
@@ -70,6 +72,7 @@ public class Ship extends SpaceObject {
         this.deceleration = s.getDeceleration();
         this.rotationSpeed = s.getRotationSpeed();
         this.distanceToDodge = s.getDistanceToDodge();
+        this.satisfiableAngle = s.getSatisfiableAngle();
     }
 
     private float getMaxSpeed() {
@@ -86,6 +89,10 @@ public class Ship extends SpaceObject {
 
     private double getDistanceToDodge() {
         return distanceToDodge;
+    }
+
+    private float getSatisfiableAngle() {
+        return satisfiableAngle;
     }
 
     private void setShape() {
@@ -148,10 +155,8 @@ public class Ship extends SpaceObject {
      * Calculates if the Ship should rotate or fly.
      */
     private void rotateAndFly() {
-        float max_angle = (float) (desired + Settings.SHIP_SATISFIABLE_ANGLE);
-        float min_angle = (float) (desired - Settings.SHIP_SATISFIABLE_ANGLE);
-        transform2pi(max_angle);
-        transform2pi(min_angle);
+        float max_angle = transform2pi(desired + satisfiableAngle);
+        float min_angle = transform2pi(desired - satisfiableAngle);
         transform2pi(orientation);
 
         if (orientation < min_angle) {
@@ -266,6 +271,13 @@ public class Ship extends SpaceObject {
         }
     }
 
+    private void mutateSatisfiableAngle(double probabilityToMutate) {
+        if (probabilityToMutate > positiveMutationProbability || probabilityToMutate < negativeMutationProbability) {
+            satisfiableAngle += satisfiableAngle * mutationVariation;
+            transform2pi(satisfiableAngle);
+        }
+    }
+
     /**
      * Mutates the ship.
      */
@@ -275,6 +287,7 @@ public class Ship extends SpaceObject {
         mutateMaxSpeed(MathUtils.random(-100, 100));
         mutateAcceleration(MathUtils.random(-100, 100));
         mutateDeceleration(MathUtils.random(-100, 100));
+        mutateSatisfiableAngle(MathUtils.random(-100, 100));
     }
 
     /**
@@ -288,12 +301,12 @@ public class Ship extends SpaceObject {
         transform2pi(orientation);
         if (left) {
             orientation += rotationSpeed * dt;
-            if (orientation > desired + Settings.SHIP_SATISFIABLE_ANGLE)
-                orientation = (float) (desired + Settings.SHIP_SATISFIABLE_ANGLE);
+            if (orientation > desired + satisfiableAngle)
+                orientation = desired + satisfiableAngle;
         } else if (right) {
             orientation -= rotationSpeed * dt;
-            if (orientation < desired - Settings.SHIP_SATISFIABLE_ANGLE)
-                orientation = (float) (desired + Settings.SHIP_SATISFIABLE_ANGLE);
+            if (orientation < desired - satisfiableAngle)
+                orientation = desired + satisfiableAngle;
         }
         transform2pi(orientation);
     }
@@ -354,12 +367,12 @@ public class Ship extends SpaceObject {
 
     /**
      * Representation of the ship has a String.
-     * <p>[maxSpeed; acceleration; deceleration; distanceToDodge; rotationSpeed; lifeTime]
+     * <p>[maxSpeed; acceleration; deceleration; distanceToDodge; rotationSpeed; satisfiableAngle; lifeTime]
      *
      * @return String with Ship stats
      */
     public String toString() {
-        return "[" + String.format("%4.0f", maxSpeed) + "; " + String.format("%4.0f", acceleration) + "; " + String.format("%4.0f", deceleration) + "; " + String.format("%3.0f", distanceToDodge) + "; " + String.format("%.2f", rotationSpeed) + "; " + String.format("%3.0f", lifeTime) + "]";
+        return "[" + String.format("%4.0f", maxSpeed) + "; " + String.format("%4.0f", acceleration) + "; " + String.format("%4.0f", deceleration) + "; " + String.format("%3.0f", distanceToDodge) + "; " + String.format("%.2f", rotationSpeed) + "; " + String.format("%.2f", satisfiableAngle) + "; " + String.format("%3.0f", lifeTime) + "]";
     }
 
     /**
