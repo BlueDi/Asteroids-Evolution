@@ -369,7 +369,7 @@ public class Ship extends SpaceObject {
      */
     public void draw(ShapeRenderer sr) {
         if (Settings.DEBUG) {
-            sr.begin(ShapeType.Circle);
+            sr.begin(ShapeType.Line);
             sr.setColor(1, 0.5f, 0.5f, 1);
             sr.circle(x, y, (float) distanceToDodge);
             sr.end();

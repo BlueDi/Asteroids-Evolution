@@ -35,7 +35,7 @@ public final class Settings {
 
     //Food
     public static int FOOD_SIZE = 2;
-    public static ShapeType FOOD_SHAPE = ShapeType.Circle;
+    public static ShapeType FOOD_SHAPE = ShapeType.Filled;
     public static int FOOD_LIFETIME = 10;
 
     private Settings() {

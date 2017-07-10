@@ -1,6 +1,7 @@
 package managers;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -10,6 +11,7 @@ import entities.Ship;
 
 import java.util.ArrayList;
 import java.util.List;
+
 
 class PlayState {
     private ShapeRenderer sr;
@@ -378,6 +380,10 @@ class PlayState {
             Asteroid a = asteroids.get(asteroids.size() - 1);
             a.setX(Gdx.input.getX());
             a.setY(Gdx.input.getY() * -1 + Game.HEIGHT);
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+            Settings.DEBUG = !Settings.DEBUG;
         }
     }
 }
