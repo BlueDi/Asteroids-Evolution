@@ -29,9 +29,9 @@ public class Ship extends SpaceObject {
 
     private float PI = (float) Math.PI;
 
-    private int min_mutation_probability;
-    private int med_mutation_probability;
-    private float mutation_variation;
+    private int positiveMutationProbability;
+    private int negativeMutationProbability;
+    private float mutationVariation;
 
     /**
      * Creates a new Ship with random stats.
@@ -53,9 +53,9 @@ public class Ship extends SpaceObject {
         rotationSpeed = MathUtils.random(2, Settings.SHIP_ROTATION);
         distanceToDodge = MathUtils.random(1, Settings.SHIP_DISTANCE_DODGE);
 
-        min_mutation_probability = Settings.MUTATION_PROBABILITY;
-        med_mutation_probability = Settings.MUTATION_PROBABILITY + (100 - Settings.MUTATION_PROBABILITY / 2);
-        mutation_variation = Settings.MUTATION_VARIATION;
+        positiveMutationProbability = Settings.MUTATION_PROBABILITY;
+        negativeMutationProbability = -positiveMutationProbability;
+        mutationVariation = Settings.MUTATION_VARIATION;
     }
 
     /**
@@ -234,10 +234,8 @@ public class Ship extends SpaceObject {
     }
 
     private void mutateDistanceToDodge(double probabilityToMutate) {
-        if (probabilityToMutate > min_mutation_probability && probabilityToMutate < med_mutation_probability) {
-            distanceToDodge += distanceToDodge * mutation_variation;
-        } else if (probabilityToMutate >= med_mutation_probability) {
-            distanceToDodge -= distanceToDodge * mutation_variation;
+        if (probabilityToMutate > positiveMutationProbability || probabilityToMutate < negativeMutationProbability) {
+            distanceToDodge += distanceToDodge * mutationVariation;
         }
         if (distanceToDodge < 1)
             distanceToDodge = 1;
@@ -245,34 +243,26 @@ public class Ship extends SpaceObject {
 
 
     private void mutateRotationSpeed(double probabilityToMutate) {
-        if (probabilityToMutate > min_mutation_probability && probabilityToMutate < med_mutation_probability) {
-            rotationSpeed += rotationSpeed * mutation_variation;
-        } else if (probabilityToMutate >= med_mutation_probability) {
-            rotationSpeed -= rotationSpeed * mutation_variation;
+        if (probabilityToMutate > positiveMutationProbability || probabilityToMutate < negativeMutationProbability) {
+            rotationSpeed += rotationSpeed * mutationVariation;
         }
     }
 
     private void mutateMaxSpeed(double probabilityToMutate) {
-        if (probabilityToMutate > min_mutation_probability && probabilityToMutate < med_mutation_probability) {
-            maxSpeed += maxSpeed * mutation_variation;
-        } else if (probabilityToMutate >= med_mutation_probability) {
-            maxSpeed -= maxSpeed * mutation_variation;
+        if (probabilityToMutate > positiveMutationProbability || probabilityToMutate < negativeMutationProbability) {
+            maxSpeed += maxSpeed * mutationVariation;
         }
     }
 
     private void mutateAcceleration(double probabilityToMutate) {
-        if (probabilityToMutate > min_mutation_probability && probabilityToMutate < med_mutation_probability) {
-            acceleration += acceleration * mutation_variation;
-        } else if (probabilityToMutate >= med_mutation_probability) {
-            acceleration -= acceleration * mutation_variation;
+        if (probabilityToMutate > positiveMutationProbability || probabilityToMutate < negativeMutationProbability) {
+            acceleration += acceleration * mutationVariation;
         }
     }
 
     private void mutateDeceleration(double probabilityToMutate) {
-        if (probabilityToMutate > min_mutation_probability && probabilityToMutate < med_mutation_probability) {
-            deceleration += deceleration * mutation_variation;
-        } else if (probabilityToMutate >= med_mutation_probability) {
-            deceleration -= deceleration * mutation_variation;
+        if (probabilityToMutate > positiveMutationProbability || probabilityToMutate < negativeMutationProbability) {
+            deceleration += deceleration * mutationVariation;
         }
     }
 
@@ -280,11 +270,11 @@ public class Ship extends SpaceObject {
      * Mutates the ship.
      */
     public void mutate() {
-        mutateDistanceToDodge(MathUtils.random(0, 100));
-        mutateRotationSpeed(MathUtils.random(0, 100));
-        mutateMaxSpeed(MathUtils.random(0, 100));
-        mutateAcceleration(MathUtils.random(0, 100));
-        mutateDeceleration(MathUtils.random(0, 100));
+        mutateDistanceToDodge(MathUtils.random(-100, 100));
+        mutateRotationSpeed(MathUtils.random(-100, 100));
+        mutateMaxSpeed(MathUtils.random(-100, 100));
+        mutateAcceleration(MathUtils.random(-100, 100));
+        mutateDeceleration(MathUtils.random(-100, 100));
     }
 
     /**
