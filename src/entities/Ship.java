@@ -300,13 +300,20 @@ public class Ship extends SpaceObject {
         transform2pi(desired);
         transform2pi(orientation);
         if (left) {
-            orientation += rotationSpeed * dt;
-            if (orientation > desired + satisfiableAngle)
-                orientation = desired + satisfiableAngle;
+            float newOrientation = orientation + rotationSpeed * dt;
+            float objectiveOrientation = desired + satisfiableAngle;
+            if (orientation < objectiveOrientation && newOrientation > desired + satisfiableAngle)
+                orientation = objectiveOrientation;
+            else
+                orientation = newOrientation;
+
         } else if (right) {
-            orientation -= rotationSpeed * dt;
-            if (orientation < desired - satisfiableAngle)
-                orientation = desired + satisfiableAngle;
+            float newOrientation = orientation - rotationSpeed * dt;
+            float objectiveOrientation = desired - satisfiableAngle;
+            if (orientation > objectiveOrientation && newOrientation < desired - satisfiableAngle)
+                orientation = objectiveOrientation;
+            else
+                orientation = newOrientation;
         }
         transform2pi(orientation);
     }
