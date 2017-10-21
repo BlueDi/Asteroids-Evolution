@@ -30,6 +30,7 @@ public class Ship extends SpaceObject {
 
     private float PI = (float) Math.PI;
 
+    private int mutationProbability;
     private int positiveMutationProbability;
     private int negativeMutationProbability;
     private float mutationVariation;
@@ -55,7 +56,8 @@ public class Ship extends SpaceObject {
         rotationSpeed = MathUtils.random(2, Settings.SHIP_ROTATION);
         distanceToDodge = MathUtils.random(1, Settings.SHIP_DISTANCE_DODGE);
 
-        positiveMutationProbability = Settings.MUTATION_PROBABILITY;
+        mutationProbability = Settings.MUTATION_PROBABILITY;
+        positiveMutationProbability = Settings.CHARACTERISTIC_MUTATION_PROBABILITY;
         negativeMutationProbability = -positiveMutationProbability;
         mutationVariation = Settings.MUTATION_VARIATION;
     }
@@ -239,55 +241,71 @@ public class Ship extends SpaceObject {
     }
 
     private void mutateDistanceToDodge(double probabilityToMutate) {
-        if (probabilityToMutate > positiveMutationProbability || probabilityToMutate < negativeMutationProbability) {
+        if (probabilityToMutate > positiveMutationProbability) {
             distanceToDodge += distanceToDodge * mutationVariation;
+        } else if (probabilityToMutate < negativeMutationProbability) {
+            distanceToDodge -= distanceToDodge * mutationVariation;
         }
+
         if (distanceToDodge < 1)
             distanceToDodge = 1;
     }
 
 
     private void mutateRotationSpeed(double probabilityToMutate) {
-        if (probabilityToMutate > positiveMutationProbability || probabilityToMutate < negativeMutationProbability) {
+        if (probabilityToMutate > positiveMutationProbability) {
             rotationSpeed += rotationSpeed * mutationVariation;
+        } else if (probabilityToMutate < negativeMutationProbability) {
+            rotationSpeed -= rotationSpeed * mutationVariation;
         }
     }
 
     private void mutateMaxSpeed(double probabilityToMutate) {
-        if (probabilityToMutate > positiveMutationProbability || probabilityToMutate < negativeMutationProbability) {
+        if (probabilityToMutate > positiveMutationProbability) {
             maxSpeed += maxSpeed * mutationVariation;
+        } else if (probabilityToMutate < negativeMutationProbability) {
+            maxSpeed -= maxSpeed * mutationVariation;
         }
     }
 
     private void mutateAcceleration(double probabilityToMutate) {
-        if (probabilityToMutate > positiveMutationProbability || probabilityToMutate < negativeMutationProbability) {
+        if (probabilityToMutate > positiveMutationProbability) {
             acceleration += acceleration * mutationVariation;
+        } else if (probabilityToMutate < negativeMutationProbability) {
+            acceleration -= acceleration * mutationVariation;
         }
     }
 
     private void mutateDeceleration(double probabilityToMutate) {
-        if (probabilityToMutate > positiveMutationProbability || probabilityToMutate < negativeMutationProbability) {
+        if (probabilityToMutate > positiveMutationProbability) {
             deceleration += deceleration * mutationVariation;
+        } else if (probabilityToMutate < negativeMutationProbability) {
+            deceleration -= deceleration * mutationVariation;
         }
     }
 
     private void mutateSatisfiableAngle(double probabilityToMutate) {
-        if (probabilityToMutate > positiveMutationProbability || probabilityToMutate < negativeMutationProbability) {
+        if (probabilityToMutate > positiveMutationProbability) {
             satisfiableAngle += satisfiableAngle * mutationVariation;
-            transform2pi(satisfiableAngle);
+        } else if (probabilityToMutate < negativeMutationProbability) {
+            satisfiableAngle -= satisfiableAngle * mutationVariation;
         }
+        transform2pi(satisfiableAngle);
     }
 
     /**
      * Mutates the ship.
      */
     public void mutate() {
-        mutateDistanceToDodge(MathUtils.random(-100, 100));
-        mutateRotationSpeed(MathUtils.random(-100, 100));
-        mutateMaxSpeed(MathUtils.random(-100, 100));
-        mutateAcceleration(MathUtils.random(-100, 100));
-        mutateDeceleration(MathUtils.random(-100, 100));
-        mutateSatisfiableAngle(MathUtils.random(-100, 100));
+        int willItMutate = MathUtils.random(0, 100);
+        if (willItMutate > mutationProbability) {
+            mutateDistanceToDodge(MathUtils.random(-100, 100));
+            mutateRotationSpeed(MathUtils.random(-100, 100));
+            mutateMaxSpeed(MathUtils.random(-100, 100));
+            mutateAcceleration(MathUtils.random(-100, 100));
+            mutateDeceleration(MathUtils.random(-100, 100));
+            mutateSatisfiableAngle(MathUtils.random(-100, 100));
+        }
     }
 
     /**

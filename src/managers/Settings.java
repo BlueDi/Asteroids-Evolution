@@ -10,13 +10,14 @@ public final class Settings {
     static int NUMBER_OF_SHIPS = 1000;
     static int NUMBER_OF_ASTEROIDS = 10;
     static int NUMBER_OF_FOOD = 30;
-    public static int MUTATION_PROBABILITY = 50;
+    public static int MUTATION_PROBABILITY = 2;
+    public static int CHARACTERISTIC_MUTATION_PROBABILITY = 75;
     public static float MUTATION_VARIATION = 0.05f;
     static int FIT_EXPONENTIAL = 5;
-    static int ELITISM = NUMBER_OF_SHIPS / 10;
+    static int ELITISM = NUMBER_OF_SHIPS / 75;
 
     //Ship
-    public static int SHIP_LIFETIME = 5;
+    public static int SHIP_LIFETIME = 7;
     public static float SHIP_MAX_SPEED = 500;
     public static float SHIP_MAX_ACCELERATION = 500;
     public static float SHIP_MAX_DECELERATION = 250;
