@@ -92,16 +92,16 @@ abstract class SpaceObject {
     }
 
     /**
-     * Transforms an radian angle to fit from [-2*PI; 2*PI].
+     * Transforms an radian angle to fit from [0; 2*PI].
      *
      * @param n Angle to fit in 2*PI
-     * @return Angle in [-2*PI; 2*PI]
+     * @return Angle in [0; 2*PI]
      */
     float transform2pi(float n) {
         while (n > 2 * Math.PI)
             n -= 2 * Math.PI;
 
-        while (n < 2 * Math.PI)
+        while (n < 0)
             n += 2 * Math.PI;
 
         return n;
@@ -142,10 +142,10 @@ abstract class SpaceObject {
     }
 
     /**
-     * Verifica se dois SpaceObject colidem.
+     * Checks if 2 SpaceObjects colide.
      *
-     * @param other SpaceObject a verificar
-     * @return true se colidem, false senao
+     * @param other SpaceObject to check
+     * @return true if colide, else false
      */
     public boolean intersects(SpaceObject other) {
         float[] sx = other.getShapeX();

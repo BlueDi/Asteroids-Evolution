@@ -150,16 +150,19 @@ public class Ship extends SpaceObject {
      */
     private float calculateDesiredOrientation(float closestX, float closestY) {
         float desired_angle_radians = (float) Math.atan2(closestY - y, closestX - x);
-        return transform2pi(desired_angle_radians);
+        transform2pi(desired_angle_radians);
+        return desired_angle_radians;
     }
 
     /**
      * Calculates if the Ship should rotate or fly.
      */
     private void rotateAndFly() {
-        float max_angle = transform2pi(desired + satisfiableAngle);
-        float min_angle = transform2pi(desired - satisfiableAngle);
+        transform2pi(desired);
         transform2pi(orientation);
+
+        float max_angle = desired + satisfiableAngle;
+        float min_angle = desired - satisfiableAngle;
 
         if (orientation < min_angle) {
             setLeft();
@@ -219,7 +222,6 @@ public class Ship extends SpaceObject {
             if (closestAsteroid != null)
                 dodge_desired = calculateDesiredOrientation(closestAsteroid.getX(), closestAsteroid.getY());
             dodge_desired += Settings.SHIP_DODGE_ANGLE;
-            transform2pi(dodge_desired);
             if (dodge_desired > desired)
                 desired -= (desired - dodge_desired);
             else
@@ -317,21 +319,23 @@ public class Ship extends SpaceObject {
     private void rotate(float dt) {
         transform2pi(desired);
         transform2pi(orientation);
+
         if (left) {
             float newOrientation = orientation + rotationSpeed * dt;
             float objectiveOrientation = desired + satisfiableAngle;
-            if (orientation < objectiveOrientation && newOrientation > desired + satisfiableAngle)
+            if (orientation < objectiveOrientation && newOrientation > desired + satisfiableAngle) {
                 orientation = objectiveOrientation;
-            else
+            } else {
                 orientation = newOrientation;
-
+            }
         } else if (right) {
             float newOrientation = orientation - rotationSpeed * dt;
             float objectiveOrientation = desired - satisfiableAngle;
-            if (orientation > objectiveOrientation && newOrientation < desired - satisfiableAngle)
+            if (orientation > objectiveOrientation && newOrientation < desired - satisfiableAngle) {
                 orientation = objectiveOrientation;
-            else
+            } else {
                 orientation = newOrientation;
+            }
         }
         transform2pi(orientation);
     }
@@ -344,7 +348,7 @@ public class Ship extends SpaceObject {
      */
     private void accelerate(float dt) {
         if (up) {
-            float initialVelocity = (float) Math.sqrt(dx * dx + dy * dy);
+            float initialVelocity = (float) Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
             if (initialVelocity < maxSpeed) {
                 dx += MathUtils.cos(orientation) * acceleration * dt;
                 dy += MathUtils.sin(orientation) * acceleration * dt;
@@ -364,7 +368,7 @@ public class Ship extends SpaceObject {
      * @param dt Time elapsed
      */
     private void decelerate(float dt) {
-        float vec = (float) Math.sqrt(dx * dx + dy * dy);
+        float vec = (float) Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
         if (vec > 0) {
             dx -= (dx / vec) * deceleration * dt;
             dy -= (dy / vec) * deceleration * dt;
