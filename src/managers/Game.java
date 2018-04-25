@@ -30,7 +30,8 @@ public class Game implements ApplicationListener {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
 
-		ps.update(Gdx.graphics.getDeltaTime() * Settings.TIME_MULTIPLIER);
+		float delta = Gdx.graphics.getDeltaTime() * Settings.TIME_MULTIPLIER;
+		ps.update(delta);
 		ps.draw();
 	}
 

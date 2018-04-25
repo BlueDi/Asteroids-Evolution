@@ -3,7 +3,7 @@ package entities;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import managers.Game;
 
-abstract class SpaceObject {
+public abstract class SpaceObject {
     float x;
     float y;
     float dx;
