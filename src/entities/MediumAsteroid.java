@@ -3,13 +3,12 @@ package entities;
 import managers.Settings;
 
 public class MediumAsteroid extends Asteroid {
-	private int numPoints = 10;
-	private int width = height = 20;
-
 	public MediumAsteroid() {
 		super(Asteroid.MEDIUM);
+		numPoints = 10;
+		width = height = 20;
 	}
-	
+
 	public MediumAsteroid(float x, float y) {
 		super(x, y, Asteroid.MEDIUM);
 	}
@@ -26,7 +25,7 @@ public class MediumAsteroid extends Asteroid {
 		return height;
 	}
 
-	public double getSpeed() {
+	public float getSpeed() {
 		return Settings.ASTEROID_SPEED_MEDIUM * Settings.TIME_MULTIPLIER;
 	}
 

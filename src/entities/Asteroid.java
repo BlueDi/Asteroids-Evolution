@@ -12,7 +12,7 @@ public class Asteroid extends SpaceObject {
 	public static final int MEDIUM = 1;
 	public static final int LARGE = 2;
 
-	private int numPoints;
+	protected int numPoints;
 	private float[] dists;
 
 	public Asteroid(int type) {
@@ -21,9 +21,9 @@ public class Asteroid extends SpaceObject {
 		this.rotationSpeed = MathUtils.random(-Settings.ASTEROID_ROTATION, Settings.ASTEROID_ROTATION);
 
 		setRandomPosition();
-		defineType();
+		speed =
 
-		orientation = MathUtils.random(2 * (float) Math.PI);
+				orientation = MathUtils.random(2 * (float) Math.PI);
 		dx = MathUtils.cos(orientation) * speed;
 		dy = MathUtils.sin(orientation) * speed;
 
@@ -48,22 +48,6 @@ public class Asteroid extends SpaceObject {
 		return type;
 	}
 
-	public void defineType() {
-		if (type == SMALL) {
-			numPoints = 8;
-			width = height = 12;
-			speed = Settings.ASTEROID_SPEED_SMALL * Settings.TIME_MULTIPLIER;
-		} else if (type == MEDIUM) {
-			numPoints = 10;
-			width = height = 20;
-			speed = Settings.ASTEROID_SPEED_MEDIUM * Settings.TIME_MULTIPLIER;
-		} else if (type == LARGE) {
-			numPoints = 12;
-			width = height = 40;
-			speed = Settings.ASTEROID_SPEED_LARGE * Settings.TIME_MULTIPLIER;
-		}
-	}
-
 	private void setShape() {
 		float angle = 0;
 		for (int i = 0; i < numPoints; i++) {
@@ -71,6 +55,10 @@ public class Asteroid extends SpaceObject {
 			shapey[i] = y + MathUtils.sin(angle + orientation) * dists[i];
 			angle += 2 * 3.1415f / numPoints;
 		}
+	}
+
+	public float getSpeed() {
+		return speed;
 	}
 
 	public void update(float dt) {

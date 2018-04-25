@@ -3,19 +3,14 @@ package entities;
 import managers.Settings;
 
 public class SmallAsteroid extends Asteroid {
-	private int numPoints = 8;
-	private int width = height = 12;
-
 	public SmallAsteroid() {
 		super(Asteroid.SMALL);
+		numPoints = 8;
+		width = height = 12;
 	}
 
 	public SmallAsteroid(float x, float y) {
-		super(x,y,Asteroid.SMALL);
-	}
-
-	public int getPoints() {
-		return numPoints;
+		super(x, y, Asteroid.SMALL);
 	}
 
 	public int getWidth() {
@@ -26,7 +21,7 @@ public class SmallAsteroid extends Asteroid {
 		return height;
 	}
 
-	public double getSpeed() {
+	public float getSpeed() {
 		return Settings.ASTEROID_SPEED_SMALL * Settings.TIME_MULTIPLIER;
 	}
 
