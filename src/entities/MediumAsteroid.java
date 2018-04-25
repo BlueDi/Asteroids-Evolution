@@ -7,6 +7,7 @@ public class MediumAsteroid extends Asteroid {
 		super(Asteroid.MEDIUM);
 		numPoints = 10;
 		width = height = 20;
+		init();
 	}
 
 	public MediumAsteroid(float x, float y) {

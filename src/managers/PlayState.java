@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 import entities.Asteroid;
 import entities.Food;
+import entities.LargeAsteroid;
 import entities.MediumAsteroid;
 import entities.Ship;
 import entities.SmallAsteroid;
@@ -174,7 +175,7 @@ class PlayState {
 	 * Creates a new Asteroid.
 	 */
 	private void spawnSingleAsteroid() {
-		asteroids.add(new Asteroid(Asteroid.LARGE));
+		asteroids.add(new LargeAsteroid());
 	}
 
 	private void spawnAsteroids() {

@@ -35,16 +35,28 @@ public class Game implements ApplicationListener {
 		ps.draw();
 	}
 
-	public void resize(int width, int height) {
-	}
-
-	public void pause() {
-	}
-
-	public void resume() {
-	}
-
+	@Override
 	public void dispose() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void pause() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void resize(int arg0, int arg1) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void resume() {
+		// TODO Auto-generated method stub
+
 	}
 
 }

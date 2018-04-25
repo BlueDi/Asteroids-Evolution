@@ -7,6 +7,7 @@ public class SmallAsteroid extends Asteroid {
 		super(Asteroid.SMALL);
 		numPoints = 8;
 		width = height = 12;
+		init();
 	}
 
 	public SmallAsteroid(float x, float y) {

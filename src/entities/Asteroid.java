@@ -17,6 +17,16 @@ public class Asteroid extends SpaceObject {
 
 	public Asteroid(int type) {
 		this.type = type;
+		init();
+	}
+
+	public Asteroid(float x, float y, int type) {
+		this(type);
+		this.x = x;
+		this.y = y;
+	}
+
+	protected void init() {
 		this.lifeTime = Settings.ASTEROID_LIFETIME * Settings.TIME_MULTIPLIER;
 		this.rotationSpeed = MathUtils.random(-Settings.ASTEROID_ROTATION, Settings.ASTEROID_ROTATION);
 
@@ -36,12 +46,6 @@ public class Asteroid extends SpaceObject {
 			dists[i] = MathUtils.random(radius / 2, radius);
 
 		setShape();
-	}
-
-	public Asteroid(float x, float y, int type) {
-		this(type);
-		this.x = x;
-		this.y = y;
 	}
 
 	public int getType() {
