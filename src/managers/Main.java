@@ -9,7 +9,7 @@ public class Main {
         cfg.title = "Evolution";
         cfg.width = Settings.WINDOW_WIDTH;
         cfg.height = Settings.WINDOW_HEIGHT;
-        cfg.useGL30 = true;
+        cfg.useGL30 = false;
         cfg.resizable = false;
 
         new LwjglApplication(new Game(), cfg);
